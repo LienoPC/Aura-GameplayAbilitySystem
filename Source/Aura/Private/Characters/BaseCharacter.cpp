@@ -11,10 +11,23 @@ ABaseCharacter::ABaseCharacter()
 	
 }
 
+UAbilitySystemComponent* ABaseCharacter::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
+
+UAttributeSet* ABaseCharacter::GetAttributeSet() const
+{
+	return AttributeSet;
+}
+
+
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, BaseHandWeaponSocket);
+
+	
 }
 
 

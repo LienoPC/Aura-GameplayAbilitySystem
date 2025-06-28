@@ -3,19 +3,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
 #include "BaseCharacter.generated.h"
 
+class UAttributeSet;
+class UAbilitySystemComponent;
 class USkeletalMeshComponent;
 
 UCLASS(Abstract)
-class AURA_API ABaseCharacter : public ACharacter
+class AURA_API ABaseCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
 public:
 	ABaseCharacter();
-
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	UAttributeSet* GetAttributeSet() const;
 protected:
 	virtual void BeginPlay() override;
 
@@ -24,6 +28,11 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category="Combat")
 	FName BaseHandWeaponSocket;
+
+	UPROPERTY()
+	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
+	UPROPERTY()
+	TObjectPtr<UAttributeSet> AttributeSet;
 public:	
 
 
