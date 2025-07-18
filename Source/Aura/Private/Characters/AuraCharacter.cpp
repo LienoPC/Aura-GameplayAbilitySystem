@@ -4,6 +4,7 @@
 #include "Characters/AuraCharacter.h"
 
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -37,7 +38,7 @@ void AAuraCharacter::BeginPlay()
 	
 }
 
-void AAuraCharacter::InitAbilitySystem()
+void AAuraCharacter::InitAbilityActorInfo()
 {
 	// 1) Never run twice
 	if (bAbilitySystemInitialized)
@@ -59,6 +60,7 @@ void AAuraCharacter::InitAbilitySystem()
 	
 	AuraPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(AuraPlayerState, this);
 	AbilitySystemComponent = AuraPlayerState->GetAbilitySystemComponent();
+	Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
 	AttributeSet = AuraPlayerState->GetAttributeSet();
 
 	// Initialize HUD
@@ -78,13 +80,13 @@ void AAuraCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	// Init ability actor info for the server
-	InitAbilitySystem();
+	InitAbilityActorInfo();
 }
 
 void AAuraCharacter::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
-	InitAbilitySystem();
+	InitAbilityActorInfo();
 
 	
 }

@@ -23,6 +23,7 @@ public:
 protected:
 
 	virtual void BeginPlay() override;
+	virtual void InitAbilityActorInfo() override;
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<USpringArmComponent> SpringArm;
 
@@ -30,7 +31,6 @@ protected:
 	TObjectPtr<UCameraComponent> Camera;
 private:
 
-	void InitAbilitySystem();
 	bool bAbilitySystemInitialized = false;
 	
 };
