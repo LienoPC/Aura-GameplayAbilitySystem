@@ -47,6 +47,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetWidgetControllerParams(FWidgetControllerParams WCParams);
 
+	UAuraWidgetController();
+
+	UFUNCTION(BlueprintCallable)
 	virtual void BroadCastInitialValues();
 
 	virtual void BindCallbacksToDependencies();

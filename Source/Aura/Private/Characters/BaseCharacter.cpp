@@ -2,6 +2,9 @@
 
 
 #include "Characters/BaseCharacter.h"
+#include "AbilitySystemComponent.h"
+#include "GameplayEffect.h"
+#include "AbilitySystem/AuraAbilitySystemComponent.h"
 
 ABaseCharacter::ABaseCharacter()
 {
@@ -21,6 +24,12 @@ UAttributeSet* ABaseCharacter::GetAttributeSet() const
 	return AttributeSet;
 }
 
+FVector ABaseCharacter::GetCombatSocketLocation()
+{
+	check(Weapon);
+	return Weapon->GetSocketLocation(WeaponTipSocketName);
+}
+
 
 void ABaseCharacter::BeginPlay()
 {
@@ -33,5 +42,34 @@ void ABaseCharacter::BeginPlay()
 void ABaseCharacter::InitAbilityActorInfo()
 {
 }
+
+void ABaseCharacter::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float level) const
+{
+	check(IsValid(GetAbilitySystemComponent()));
+	check(GameplayEffectClass);
+	
+	FGameplayEffectContextHandle EffectContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
+	EffectContextHandle.Get()->AddSourceObject(this);
+	const FGameplayEffectSpecHandle EffectSpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(GameplayEffectClass, level,EffectContextHandle);
+	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*EffectSpecHandle.Data.Get(), GetAbilitySystemComponent());
+}
+
+void ABaseCharacter::InitializeDefaultAttributes() const
+{
+	ApplyEffectToSelf(DefaultPrimaryAttributes, 1.f);
+	ApplyEffectToSelf(DefaultSecondaryAttributes, 1.f);
+
+	ApplyEffectToSelf(DefaultVitalAttributes, 1.f);
+}
+
+void ABaseCharacter::AddCharacterAbilities()
+{
+	UAuraAbilitySystemComponent* AuraASC = CastChecked<UAuraAbilitySystemComponent>(AbilitySystemComponent);
+	if (!HasAuthority())return;
+	AuraASC->AddCharacterAbilities(StartupAbilities);
+}
+
+
+
 
 

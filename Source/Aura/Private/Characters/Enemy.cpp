@@ -19,6 +19,11 @@ AEnemy::AEnemy()
 
 }
 
+int32 AEnemy::GetPlayerLevel()
+{
+	return Level;
+}
+
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();

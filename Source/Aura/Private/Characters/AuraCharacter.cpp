@@ -62,7 +62,7 @@ void AAuraCharacter::InitAbilityActorInfo()
 	AbilitySystemComponent = AuraPlayerState->GetAbilitySystemComponent();
 	Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
 	AttributeSet = AuraPlayerState->GetAttributeSet();
-
+	
 	// Initialize HUD
 	if(AAuraPlayerController* AuraPlayerController = Cast<AAuraPlayerController>(GetController()))
 	{
@@ -72,7 +72,9 @@ void AAuraCharacter::InitAbilityActorInfo()
 		}
 		
 	}
-	
+	UE_LOG(LogTemp, Warning, TEXT("Initialized correctly ability system on %s"), *GetName());
+
+	InitializeDefaultAttributes();
 }
 
 
@@ -81,6 +83,16 @@ void AAuraCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 	// Init ability actor info for the server
 	InitAbilityActorInfo();
+	if (bAbilitySystemInitialized)
+		AddCharacterAbilities();
+}
+
+int32 AAuraCharacter::GetPlayerLevel()
+{
+	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
+	check(AuraPlayerState);
+
+	return AuraPlayerState->GetPlayerLevel();
 }
 
 void AAuraCharacter::OnRep_PlayerState()
