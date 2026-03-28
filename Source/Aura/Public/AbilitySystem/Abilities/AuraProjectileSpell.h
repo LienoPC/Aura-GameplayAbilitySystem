@@ -3,13 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AbilitySystem/Abilities/AuraGameplayAbility.h"
+#include "AbilitySystem/Abilities/DamageGameplayAbility.h"
 #include "AuraProjectileSpell.generated.h"
 
 class AAuraProjectile;
 // Gameplay Ability class for all projectile types.
 UCLASS()
-class AURA_API UAuraProjectileSpell : public UAuraGameplayAbility
+class AURA_API UAuraProjectileSpell : public UDamageGameplayAbility
 {
 	GENERATED_BODY()
 
@@ -22,7 +22,7 @@ protected:
 	// Class of projectile to spawn
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<AAuraProjectile> ProjectileClass;
-
+	
 
 private:
 

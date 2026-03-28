@@ -11,7 +11,10 @@
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Components/SplineComponent.h"
+#include "Components/WidgetComponent.h"
 #include "Input/AuraInputComponent.h"
+#include "GameFramework/Character.h"
+#include "UI/Widget/DamageTextComponent.h"
 #include "Interaction/EnemyInterface.h"
 
 AAuraPlayerController::AAuraPlayerController()
@@ -43,6 +46,20 @@ void AAuraPlayerController::HighlightTarget()
 		{
 			ThisActor->HighlightActor();
 		}
+	}
+}
+
+void AAuraPlayerController::ShowDamageNumber_Implementation(float DamageAmount, bool bBlockedHit, bool bCritHit, ACharacter* TargetCharacter)
+{
+	if(IsValid(TargetCharacter) && DamageTextComponentClass && IsLocalController())
+	{
+		UDamageTextComponent* TextComponent = NewObject<UDamageTextComponent>(TargetCharacter, DamageTextComponentClass);
+
+		TextComponent->RegisterComponent();
+		TextComponent->AttachToComponent(TargetCharacter->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+		TextComponent->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+
+		TextComponent->SetDamageText(DamageAmount, bBlockedHit, bCritHit);
 	}
 }
 

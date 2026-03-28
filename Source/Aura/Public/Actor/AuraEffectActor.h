@@ -47,7 +47,7 @@ protected:
 	void OnEndOverlap(AActor* TargetActor);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Apply Effects")
-	bool bDestroyOnEffectRemoval = false;
+	bool bDestroyOnEffectApplication = false;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Apply Effects")
 	TArray<TSubclassOf<UGameplayEffect>> InstantGameplayEffectsClass;
@@ -73,4 +73,7 @@ protected:
 	float ActorLevel = 1.f;
 private:
 	void ApplyEffect(TSubclassOf<UGameplayEffect> GameplayEffectClass, UAbilitySystemComponent* TargetASC);
+
+	UPROPERTY(EditAnywhere, Category="Apply Effects")
+	bool bApplyEffectsToEnemies = false;
 };

@@ -3,11 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayEffectTypes.h"
 #include "GameFramework/Actor.h"
 #include "NiagaraSystem.h"
 #include "AuraProjectile.generated.h"
 
 
+class UGameplayEffect;
 class UProjectileMovementComponent;
 // Base class for all projectile actor that can be spawned within the game
 UCLASS()
@@ -22,6 +24,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile")
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovementComponent;
 
+	UPROPERTY(BlueprintReadWrite, meta = (ExposeOnSpawn = true))
+	FGameplayEffectSpecHandle DamageEffectSpecHandle;
 protected:
 	virtual void BeginPlay() override;
 
@@ -46,6 +50,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	float LifeSpan = 15.f;
+
 	
 private:
 

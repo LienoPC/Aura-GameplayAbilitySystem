@@ -72,7 +72,6 @@ void AAuraCharacter::InitAbilityActorInfo()
 		}
 		
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Initialized correctly ability system on %s"), *GetName());
 
 	InitializeDefaultAttributes();
 }

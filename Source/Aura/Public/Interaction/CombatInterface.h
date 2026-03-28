@@ -28,4 +28,9 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void UpdateWarpTarget(const FVector &TargetPosition);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	UAnimMontage* GetHitReactMontage();
+
+	virtual void Die() = 0;
 };

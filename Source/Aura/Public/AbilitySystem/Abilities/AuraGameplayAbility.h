@@ -19,4 +19,5 @@ public:
 	// Each gameplay ability has an InputTag that defines the associated input for the tag. It can change at runtime.
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	FGameplayTag StartupInputTag;
+
 };

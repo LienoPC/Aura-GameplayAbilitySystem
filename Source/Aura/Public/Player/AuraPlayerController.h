@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "AuraPlayerController.generated.h"
 
+class UDamageTextComponent;
 struct FGameplayTag;
 class UAuraAbilitySystemComponent;
 class UAuraInputConfig;
@@ -28,6 +29,10 @@ public:
 	
 	virtual void PlayerTick(float DeltaTime) override;
 	void HighlightTarget();
+
+	// Spawns a Widget to show damage number
+	UFUNCTION(Client, Reliable)
+	void ShowDamageNumber(float DamageAmount, bool bBlockedHit, bool bCritHit, ACharacter* TargetCharacter);
 
 protected:
 
@@ -105,4 +110,8 @@ private:
 
 	// Cached cursor hit location for every frame
 	FHitResult CursorHitLocation;
+
+	// Text component class to show damage number
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UDamageTextComponent> DamageTextComponentClass;
 };
