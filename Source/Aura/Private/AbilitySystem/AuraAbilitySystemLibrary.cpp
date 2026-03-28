@@ -161,3 +161,50 @@ void UAuraAbilitySystemLibrary::SetIsCriticalHit(FGameplayEffectContextHandle& E
 		EffectContext->SetIsCriticalHit(Value);
 	}
 }
+
+void UAuraAbilitySystemLibrary::GetLiveEntitiesWithinRadius(const UObject* WorldContext, const FVector& Location,
+	const float Radius, TArray<AActor*>& OutEntities, const TArray<AActor*> &FilteredOut)
+{
+	if(!WorldContext)
+		return;
+	FCollisionQueryParams Params;
+
+	Params.AddIgnoredActors(FilteredOut);
+
+	TArray<FOverlapResult> OverlapResults;
+
+	if (const UWorld* World = GEngine->GetWorldFromContextObject(WorldContext, EGetWorldErrorMode::ReturnNull))
+	{
+		World->OverlapMultiByObjectType(OverlapResults, Location, FQuat::Identity, FCollisionObjectQueryParams(FCollisionObjectQueryParams::AllDynamicObjects), FCollisionShape::MakeSphere(Radius), Params);
+	}
+
+	for (auto &OverlapResult : OverlapResults)
+	{
+		if (AActor* OverlapActor = OverlapResult.GetActor())
+		{
+			if (OverlapActor->Implements<UCombatInterface>())
+			{
+				if (!ICombatInterface::Execute_IsDead(OverlapActor))
+				{
+					OutEntities.AddUnique(ICombatInterface::Execute_GetAvatar(OverlapActor));
+				}
+			}
+		}
+	}
+	
+}
+
+bool UAuraAbilitySystemLibrary::IsNotFriend(AActor* FirstActor, AActor* SecondActor)
+{
+	const bool bFirstIsPlayer = FirstActor->ActorHasTag("Player");
+	const bool bSecondIsPlayer = SecondActor->ActorHasTag("Player");
+
+	const bool bFirstIsEnemy = FirstActor->ActorHasTag("Enemy");
+	const bool bSecondIsEnemy = SecondActor->ActorHasTag("Enemy");
+
+	const bool bBothArePlayers = bFirstIsPlayer && bSecondIsPlayer;
+
+	const bool bBothAreEnemies = bFirstIsEnemy && bSecondIsEnemy;
+
+	return !(bBothArePlayers || bBothAreEnemies);
+}

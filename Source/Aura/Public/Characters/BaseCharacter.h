@@ -24,14 +24,22 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() const;
 
-	virtual FVector GetCombatSocketLocation() override;
+	// Combat Interface
+	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag &AttackTag) override;
 
 	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
 
-	virtual void Die() override;
+	virtual bool IsDead_Implementation() const override;
 
+	virtual AActor* GetAvatar_Implementation() override;
+	
+	virtual void Die() override;
+	virtual TArray<FTaggedMontage> GetAttackMontages_Implementation() override;
+	// End Combat Interface
+	
 	UFUNCTION(NetMulticast, Reliable)	
 	virtual void MulticastHandleDeath();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -50,6 +58,14 @@ protected:
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 	UPROPERTY()
 	TObjectPtr<UAttributeSet> AttributeSet;
+
+	UPROPERTY(EditAnywhere, Category="Combat")
+	TArray<FTaggedMontage> TagToMontage;
+
+	UPROPERTY(EditAnywhere, Category="Combat")
+	TMap<FGameplayTag, FName> TagToSocketName;
+
+	bool bDead = false;
 
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Attributes")

@@ -159,6 +159,9 @@ void UAuraAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData
 		if (EffectProperties.SourceController)
 		{
 			EffectProperties.SourceCharacter = Cast<ACharacter>(EffectProperties.SourceController->GetPawn());
+		}else
+		{
+			EffectProperties.SourceCharacter = Cast<ACharacter>(EffectProperties.SourceAvatarActor);
 		}
 	}
 
@@ -180,6 +183,11 @@ void UAuraAttributeSet::ShowFloatingText(const FEffectProperties& Props, float D
 	if(Props.SourceCharacter != Props.TargetCharacter)
 	{
 		if(AAuraPlayerController* PC = Cast<AAuraPlayerController>(Props.SourceCharacter->Controller))
+		{
+			PC->ShowDamageNumber(DamageAmount, bBlockedHit, bCriticalHit, Props.TargetCharacter);
+		}
+
+		if(AAuraPlayerController* PC = Cast<AAuraPlayerController>(Props.TargetCharacter->Controller))
 		{
 			PC->ShowDamageNumber(DamageAmount, bBlockedHit, bCriticalHit, Props.TargetCharacter);
 		}

@@ -54,4 +54,13 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayEffects")
 	static void SetIsCriticalHit(UPARAM(ref) FGameplayEffectContextHandle &EffectContextHandle, bool Value);
+
+	/**
+	* Gameplay Mechanics
+	*/
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayMechanics")
+	static void GetLiveEntitiesWithinRadius(const UObject* WorldContext, const FVector &Location, const float Radius, TArray<AActor*> &OutEntities, const TArray<AActor*> &FilteredOut);
+
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayMechanics")
+	static bool IsNotFriend(AActor* FirstActor, AActor* SecondActor);
 };

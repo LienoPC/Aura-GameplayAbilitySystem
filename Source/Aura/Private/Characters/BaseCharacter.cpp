@@ -3,6 +3,7 @@
 
 #include "Characters/BaseCharacter.h"
 #include "AbilitySystemComponent.h"
+#include "AuraGameplayTags.h"
 #include "GameplayEffect.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "Aura/Aura.h"
@@ -31,15 +32,32 @@ UAttributeSet* ABaseCharacter::GetAttributeSet() const
 	return AttributeSet;
 }
 
-FVector ABaseCharacter::GetCombatSocketLocation()
+FVector ABaseCharacter::GetCombatSocketLocation_Implementation(const FGameplayTag& AttackTag)
 {
-	check(Weapon);
-	return Weapon->GetSocketLocation(WeaponTipSocketName);
+	if (AttackTag.MatchesTagExact(FAuraGameplayTags::Get().Montage_Attack_Weapon) && IsValid(Weapon))
+	{
+		return Weapon->GetSocketLocation(WeaponTipSocketName);
+	}
+	if (FName* SocketNamePtr = TagToSocketName.Find(AttackTag); SocketNamePtr)
+	{
+		return GetMesh()->GetSocketLocation(*SocketNamePtr);
+	}
+	return FVector();
 }
 
 UAnimMontage* ABaseCharacter::GetHitReactMontage_Implementation()
 {
 	return HitReactMontage;
+}
+
+bool ABaseCharacter::IsDead_Implementation() const
+{
+	return bDead;
+}
+
+AActor* ABaseCharacter::GetAvatar_Implementation()
+{
+	return this;
 }
 
 void ABaseCharacter::Die()
@@ -49,6 +67,12 @@ void ABaseCharacter::Die()
 	
 	// Called only on the server
 	MulticastHandleDeath();
+	bDead = true;
+}
+
+TArray<FTaggedMontage> ABaseCharacter::GetAttackMontages_Implementation()
+{
+	return TagToMontage;
 }
 
 

@@ -66,8 +66,13 @@ public:
 	FGameplayTag Damage_Lightining;
 	FGameplayTag Damage_Arcane;
 	FGameplayTag Damage_Physical;
-	
-	
+
+	/**
+	 * Montages
+	 */
+	FGameplayTag Montage_Attack_Weapon;
+	FGameplayTag Montage_Attack_RightHand;
+	FGameplayTag Montage_Attack_LeftHand;
 	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistances;
 private:
 	static FAuraGameplayTags Instance;
