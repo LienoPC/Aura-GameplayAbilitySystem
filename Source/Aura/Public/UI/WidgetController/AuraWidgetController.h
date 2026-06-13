@@ -8,6 +8,7 @@
 #include "UObject/NoExportTypes.h"
 #include "AuraWidgetController.generated.h"
 
+class UAbilityInfo;
 class UAttributeSet;
 class UAbilitySystemComponent;
 
@@ -35,6 +36,8 @@ struct FWidgetControllerParams
 	TObjectPtr<UAttributeSet> AttributeSet = nullptr;
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityInfoDelegate, const FAuraAbilityInfo&, AbilityInfo);
+
 /**
  * 
  */
@@ -44,6 +47,9 @@ class AURA_API UAuraWidgetController : public UObject
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(BlueprintAssignable, Category="GAS|Messages")
+	FAbilityInfoDelegate AbilityInfoDelegate;
+	
 	UFUNCTION(BlueprintCallable)
 	void SetWidgetControllerParams(FWidgetControllerParams WCParams);
 
@@ -53,8 +59,10 @@ public:
 	virtual void BroadCastInitialValues();
 
 	virtual void BindCallbacksToDependencies();
+	
+	void BroadcastAbilityInfo() const;
 protected:
-
+	
 	UPROPERTY(BlueprintReadOnly, Category="WidgetController")
 	TObjectPtr<APlayerController> PlayerController;
 
@@ -66,4 +74,8 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category="WidgetController")
 	TObjectPtr<UAttributeSet> AttributeSet;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Widget Data")
+	TObjectPtr<UAbilityInfo> AbilityInfo;
+	
 };

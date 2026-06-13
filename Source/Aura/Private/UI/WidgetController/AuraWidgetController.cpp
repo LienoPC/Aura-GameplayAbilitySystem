@@ -3,6 +3,10 @@
 
 #include "UI/WidgetController/AuraWidgetController.h"
 
+#include "AbilitySystem/AuraAbilitySystemComponent.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
+#include "AbilitySystem/Data/AbilityInfo.h"
+
 void UAuraWidgetController::SetWidgetControllerParams(FWidgetControllerParams WCParams)
 {
 	PlayerController = WCParams.PlayerController;
@@ -22,4 +26,21 @@ void UAuraWidgetController::BroadCastInitialValues()
 
 void UAuraWidgetController::BindCallbacksToDependencies()
 {
+}
+
+void UAuraWidgetController::BroadcastAbilityInfo() const
+{
+	// Access abilities in ASC and map to AbilityInfo
+	if (UAuraAbilitySystemComponent* ASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent))
+	{
+		FForEachAbility BroadcastDelegate;
+		BroadcastDelegate.BindLambda([this, ASC](const FGameplayAbilitySpec& AbilitySpec)
+		{
+			FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoByTag(ASC->GetAbilityTagFromSpec(AbilitySpec));
+			Info.InputTag = ASC->GetAbilityInputTagFromSpec(AbilitySpec);
+			Info.StatusTag = ASC->GetAbilityStatusFromSpec(AbilitySpec);
+			AbilityInfoDelegate.Broadcast(Info);
+		});
+		ASC->ForEachAbility(BroadcastDelegate);
+	}
 }

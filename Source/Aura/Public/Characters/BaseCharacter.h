@@ -8,6 +8,8 @@
 #include "Interaction/CombatInterface.h"
 #include "BaseCharacter.generated.h"
 
+class UDebuffNiagaraComponent;
+class UNiagaraSystem;
 class UGameplayAbility;
 class UGameplayEffect;
 class UAttributeSet;
@@ -21,6 +23,7 @@ class AURA_API ABaseCharacter : public ACharacter, public IAbilitySystemInterfac
 
 public:
 	ABaseCharacter();
+	virtual void Destroyed() override;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() const;
 
@@ -33,19 +36,33 @@ public:
 
 	virtual AActor* GetAvatar_Implementation() override;
 	
-	virtual void Die() override;
+	virtual void Die(const FVector& DeathImpulse) override;
 	virtual TArray<FTaggedMontage> GetAttackMontages_Implementation() override;
+
+	virtual UNiagaraSystem* GetBloodEffectSystem_Implementation() override;
+	virtual FTaggedMontage GetTaggedMontageByTag_Implementation(const FGameplayTag& Tag) override;
+
+	virtual int32 GetMinionCount_Implementation() override;
+	virtual void IncrementMinionCount_Implementation(int32 Amount) override;
+
+	virtual ECharacterClass GetCharacterClass_Implementation() override;
+
+	virtual FOnASCRegistered GetOnAscRegisteredDelegate() override;
+	virtual FOnDeath GetOnDeathDelegate() override;
+	
+	FOnASCRegistered OnAscRegistered;
+	FOnDeath OnDeath;
 	// End Combat Interface
 	
 	UFUNCTION(NetMulticast, Reliable)	
-	virtual void MulticastHandleDeath();
+	virtual void MulticastHandleDeath(const FVector& DeathImpulse);
 
 protected:
 	virtual void BeginPlay() override;
 
 	virtual void InitAbilityActorInfo();
 
-	UPROPERTY(EditAnywhere, Category="Combat")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
 
 	UPROPERTY(EditAnywhere, Category="Combat")
@@ -81,6 +98,11 @@ protected:
 	virtual void InitializeDefaultAttributes() const;
 
 	void AddCharacterAbilities();
+	
+
+	UPROPERTY(EditAnywhere, Category="Character Class Defaults")
+	ECharacterClass CharacterClass = ECharacterClass::Warrior;
+	
 
 
 	/*
@@ -100,11 +122,36 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UMaterialInstance> WeaponDissolveMaterialInstance;
+
+
+	/**
+	 * VFX
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UNiagaraSystem> BloodEffect;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<USoundBase> DeathSound;
+	
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UDebuffNiagaraComponent> BurnDebuffNiagaraComponent;
+
+	/** Minions */
+	UPROPERTY(EditAnywhere)
+	int32 MinionCount = 0;
+
+
+	
+	
 private:
 
 	UPROPERTY(EditAnywhere, Category="Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
 
+	UPROPERTY(EditAnywhere, Category="Abilities")
+	TArray<TSubclassOf<UGameplayAbility>> StartupPassiveAbilities;
+
 	UPROPERTY(EditAnywhere, Category="Combat")
 	TObjectPtr<UAnimMontage> HitReactMontage;
-};
+
+	};

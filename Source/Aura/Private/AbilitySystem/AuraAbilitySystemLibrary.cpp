@@ -3,13 +3,36 @@
 
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "AuraGameplayTags.h"
 #include "Game/AuraGameModeBase.h"
 #include "Interaction/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/AuraPlayerState.h"
 #include "UI/HUD/AuraHUD.h"
 #include "UI/WidgetController/AuraWidgetController.h"
+
+bool UAuraAbilitySystemLibrary::MakeWidgetControllerParams(const UObject* WorldContext, FWidgetControllerParams& OutWCParams, AAuraHUD*& OutAuraHUD)
+{
+	if (APlayerController* PC = UGameplayStatics::GetPlayerController(WorldContext, 0))
+	{
+		if (AAuraHUD* AuraHUD = Cast<AAuraHUD>(PC->GetHUD()))
+		{
+			OutAuraHUD = AuraHUD;
+			AAuraPlayerState* PS = PC->GetPlayerState<AAuraPlayerState>();
+			UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
+			UAttributeSet* AS = PS->GetAttributeSet();
+			OutWCParams.AttributeSet = AS;
+			OutWCParams.AbilitySystemComponent = ASC;
+			OutWCParams.PlayerState = PS;
+			OutWCParams.PlayerController = PC;
+			return true;
+		}
+	}
+	return false;
+}
+
 
 UAbilitySystemComponent* UAuraAbilitySystemLibrary::GetAbilitySystemComponent(AActor* Target)
 {
@@ -23,16 +46,11 @@ UAbilitySystemComponent* UAuraAbilitySystemLibrary::GetAbilitySystemComponent(AA
 
 UOverlayWidgetController* UAuraAbilitySystemLibrary::GetOverlayWidgetController(const UObject* WorldContextObject)
 {
-	if (APlayerController* PC = UGameplayStatics::GetPlayerController(WorldContextObject, 0))
+	FWidgetControllerParams WidgetControllerParams;
+	AAuraHUD* AuraHUD = nullptr;
+	if (MakeWidgetControllerParams(WorldContextObject, WidgetControllerParams, AuraHUD))
 	{
-		if (AAuraHUD* AuraHUD = Cast<AAuraHUD>(PC->GetHUD()))
-		{
-			AAuraPlayerState* PS = PC->GetPlayerState<AAuraPlayerState>();
-			UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
-			UAttributeSet* AS = PS->GetAttributeSet();
-			const FWidgetControllerParams WidgetControllerParams(PC, PS, ASC, AS);
-			return AuraHUD->GetOverlayWidgetController(WidgetControllerParams);
-		}
+		return AuraHUD->GetOverlayWidgetController(WidgetControllerParams);
 	}
 
 	return nullptr;
@@ -40,16 +58,23 @@ UOverlayWidgetController* UAuraAbilitySystemLibrary::GetOverlayWidgetController(
 
 UAttributeMenuWidgetController* UAuraAbilitySystemLibrary::GetAttributeMenuWidgetController(const UObject* WorldContextObject)
 {
-	if (APlayerController* PC = UGameplayStatics::GetPlayerController(WorldContextObject, 0))
+	FWidgetControllerParams WidgetControllerParams;
+	AAuraHUD* AuraHUD = nullptr;
+	if (MakeWidgetControllerParams(WorldContextObject, WidgetControllerParams, AuraHUD))
 	{
-		if (AAuraHUD* AuraHUD = Cast<AAuraHUD>(PC->GetHUD()))
-		{
-			AAuraPlayerState* PS = PC->GetPlayerState<AAuraPlayerState>();
-			UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
-			UAttributeSet* AS = PS->GetAttributeSet();
-			const FWidgetControllerParams WidgetControllerParams(PC, PS, ASC, AS);
-			return AuraHUD->GetAttributeMenuWidgetController(WidgetControllerParams);
-		}
+		return AuraHUD->GetAttributeMenuWidgetController(WidgetControllerParams);
+	}
+
+	return nullptr;
+}
+
+USpellMenuWidgetController* UAuraAbilitySystemLibrary::GetSpellMenuWidgetController(const UObject* WorldContextObject)
+{
+	FWidgetControllerParams WidgetControllerParams;
+	AAuraHUD* AuraHUD = nullptr;
+	if (MakeWidgetControllerParams(WorldContextObject, WidgetControllerParams, AuraHUD))
+	{
+		return AuraHUD->GetSpellMenuWidgetController(WidgetControllerParams);
 	}
 	return nullptr;
 }
@@ -100,9 +125,9 @@ void UAuraAbilitySystemLibrary::InitializeDefaultAbilities(const UObject* WorldC
 	}
 
 	int32 Level = 1;
-	if (TScriptInterface<ICombatInterface> CombatInterface = ASC->GetAvatarActor())
+	if (ASC->GetAvatarActor()->Implements<UCombatInterface>())
 	{
-		Level = CombatInterface->GetPlayerLevel();
+		Level = ICombatInterface::Execute_GetPlayerLevel(ASC->GetAvatarActor());
 	}
 	for (auto Ability : ClassInfo->GetCharacterClassDefaultInfo(Class).StartupAbilities)
 	{
@@ -122,6 +147,48 @@ UCharacterClassInfo* UAuraAbilitySystemLibrary::GetCharacterClassInfo(const UObj
 		return GameMode->CharacterClassInfo;
 
 	return nullptr;
+}
+
+UAbilityInfo* UAuraAbilitySystemLibrary::GetAbilityInfo(const UObject* WorldContextObject)
+{
+
+	if(!WorldContextObject)
+		return nullptr;
+	AAuraGameModeBase* GameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
+
+	if(GameMode)
+		return GameMode->AbilityInfo;
+
+	return nullptr;
+}
+
+FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyDamageEffect(const FDamageEffectParams& DamageEffectParams)
+{
+	if (!DamageEffectParams.WorldContextObject)
+	{
+		return FGameplayEffectContextHandle();
+	}
+
+	if (DamageEffectParams.TargetAbilitySystemComponent == nullptr)
+	{
+		return FGameplayEffectContextHandle();
+	}
+	FGameplayEffectContextHandle ContextHandle = DamageEffectParams.TargetAbilitySystemComponent->MakeEffectContext();
+	ContextHandle.AddSourceObject(DamageEffectParams.SourceAbilitySystemComponent->GetAvatarActor());
+	SetDeathImpulse(ContextHandle, DamageEffectParams.DeathImpulse);
+	SetKnockbackForce(ContextHandle, DamageEffectParams.KnockbackForce);
+	FGameplayEffectSpecHandle SpecHandle = DamageEffectParams.TargetAbilitySystemComponent->MakeOutgoingSpec(DamageEffectParams.DamageGameplayEffectClass, DamageEffectParams.AbilityLevel, ContextHandle);
+
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, DamageEffectParams.DamageType, DamageEffectParams.BaseDamage);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, FAuraGameplayTags::Get().Debuff_Chance, DamageEffectParams.DebuffChance);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, FAuraGameplayTags::Get().Debuff_Damage, DamageEffectParams.DebuffDamage);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, FAuraGameplayTags::Get().Debuff_Duration, DamageEffectParams.DebuffDuration);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, FAuraGameplayTags::Get().Debuff_Frequency, DamageEffectParams.DebuffFrequency);
+
+	DamageEffectParams.TargetAbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+
+
+	return ContextHandle;
 }
 
 bool UAuraAbilitySystemLibrary::IsBlockedHit(const FGameplayEffectContextHandle& EffectContextHandle)
@@ -144,6 +211,79 @@ bool UAuraAbilitySystemLibrary::IsCriticalHit(const FGameplayEffectContextHandle
 	return false;
 }
 
+bool UAuraAbilitySystemLibrary::IsSuccessfulDebuff(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	const FAuraGameplayEffectContext* EffectContext = static_cast<const FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+	if(EffectContext)
+	{
+		return EffectContext->IsSuccessfulDebuff();
+	}
+	return false;
+}
+
+float UAuraAbilitySystemLibrary::GetDebuffDamage(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	const FAuraGameplayEffectContext* EffectContext = static_cast<const FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+	if(EffectContext)
+	{
+		return EffectContext->GetDebuffDamage();
+	}
+	return -1.f;
+}
+
+float UAuraAbilitySystemLibrary::GetDebuffDuration(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	const FAuraGameplayEffectContext* EffectContext = static_cast<const FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+	if(EffectContext)
+	{
+		return EffectContext->GetDebuffDuration();
+	}
+	return -1.f;
+}
+
+float UAuraAbilitySystemLibrary::GetDebuffFrequency(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	const FAuraGameplayEffectContext* EffectContext = static_cast<const FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+	if(EffectContext)
+	{
+		return EffectContext->GetDebuffFrequency();
+	}
+	return -1.f;
+}
+
+FGameplayTag UAuraAbilitySystemLibrary::GetDamageType(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	const FAuraGameplayEffectContext* EffectContext = static_cast<const FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+	if(EffectContext)
+	{
+		if (EffectContext->GetDamageType().IsValid())
+		{
+			return *EffectContext->GetDamageType();
+		}
+	}
+	return FGameplayTag();
+}
+
+FVector UAuraAbilitySystemLibrary::GetDeathImpulse(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	const FAuraGameplayEffectContext* EffectContext = static_cast<const FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+	if(EffectContext)
+	{
+		return EffectContext->GetDeathImpulse();
+	}
+	return FVector::ZeroVector;
+}
+
+FVector UAuraAbilitySystemLibrary::GetKnockbackForce(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	const FAuraGameplayEffectContext* EffectContext = static_cast<const FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+	if(EffectContext)
+	{
+		return EffectContext->GetKnockbackForce();
+	}
+	return FVector::ZeroVector;
+}
+
 void UAuraAbilitySystemLibrary::SetIsBlockedHit(FGameplayEffectContextHandle& EffectContextHandle, bool Value)
 {
 	FAuraGameplayEffectContext* EffectContext = static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get());
@@ -162,8 +302,74 @@ void UAuraAbilitySystemLibrary::SetIsCriticalHit(FGameplayEffectContextHandle& E
 	}
 }
 
+void UAuraAbilitySystemLibrary::SetIsSuccessfulDebuff(FGameplayEffectContextHandle& EffectContextHandle, bool Value)
+{
+	FAuraGameplayEffectContext* EffectContext = static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+	if(EffectContext)
+	{
+		EffectContext->SetIsSuccessfulDebuff(Value);
+	}
+}
+
+void UAuraAbilitySystemLibrary::SetDebuffDamage(FGameplayEffectContextHandle& EffectContextHandle, float Value)
+{
+	FAuraGameplayEffectContext* EffectContext = static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+	if(EffectContext)
+	{
+		EffectContext->SetDebuffDamage(Value);
+	}
+}
+
+void UAuraAbilitySystemLibrary::SetDebuffDuration(FGameplayEffectContextHandle& EffectContextHandle, float Value)
+{
+	FAuraGameplayEffectContext* EffectContext = static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+	if(EffectContext)
+	{
+		EffectContext->SetDebuffDuration(Value);
+	}
+}
+
+void UAuraAbilitySystemLibrary::SetDebuffFrequency(FGameplayEffectContextHandle& EffectContextHandle, float Value)
+{
+	FAuraGameplayEffectContext* EffectContext = static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+	if(EffectContext)
+	{
+		EffectContext->SetDebuffFrequency(Value);
+	}
+}
+
+void UAuraAbilitySystemLibrary::SetDebuffDamageType(FGameplayEffectContextHandle& EffectContextHandle,
+	const FGameplayTag& Value)
+{
+	FAuraGameplayEffectContext* EffectContext = static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+	if(EffectContext)
+	{
+		TSharedPtr<FGameplayTag> DamageType = MakeShared<FGameplayTag>(Value);
+		EffectContext->SetDamageType(DamageType);
+	}
+}
+
+void UAuraAbilitySystemLibrary::SetDeathImpulse(FGameplayEffectContextHandle& EffectContextHandle, const FVector& Value)
+{
+	FAuraGameplayEffectContext* EffectContext = static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+	if(EffectContext)
+	{
+		EffectContext->SetDeathImpulse(Value);
+	}
+}
+
+void UAuraAbilitySystemLibrary::SetKnockbackForce(FGameplayEffectContextHandle& EffectContextHandle,
+	const FVector& Value)
+{
+	FAuraGameplayEffectContext* EffectContext = static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+	if(EffectContext)
+	{
+		EffectContext->SetKnockbackForce(Value);
+	}
+}
+
 void UAuraAbilitySystemLibrary::GetLiveEntitiesWithinRadius(const UObject* WorldContext, const FVector& Location,
-	const float Radius, TArray<AActor*>& OutEntities, const TArray<AActor*> &FilteredOut)
+                                                            const float Radius, TArray<AActor*>& OutEntities, const TArray<AActor*> &FilteredOut)
 {
 	if(!WorldContext)
 		return;
@@ -207,4 +413,12 @@ bool UAuraAbilitySystemLibrary::IsNotFriend(AActor* FirstActor, AActor* SecondAc
 	const bool bBothAreEnemies = bFirstIsEnemy && bSecondIsEnemy;
 
 	return !(bBothArePlayers || bBothAreEnemies);
+}
+
+int32 UAuraAbilitySystemLibrary::GetGrantedXP(UWorld* WorldContext, const ECharacterClass CharacterClass, int32 Level)
+{
+	UCharacterClassInfo* ClassInfo = GetCharacterClassInfo(WorldContext);
+	FCharacterClassDefaultInfo DefaultInfo = ClassInfo->GetCharacterClassDefaultInfo(CharacterClass);
+
+	return DefaultInfo.GrantedXP.GetValueAtLevel(Level);
 }

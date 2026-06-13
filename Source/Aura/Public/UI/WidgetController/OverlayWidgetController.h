@@ -4,9 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
+#include "AbilitySystem/Data/AbilityInfo.h"
 #include "UI/WidgetController/AuraWidgetController.h"
 #include "OverlayWidgetController.generated.h"
 
+class UAbilityInfo;
 class UAuraUserWidget;
 struct FOnAttributeChangeData;
 
@@ -30,9 +32,8 @@ struct FUIWidgetRow : public FTableRowBase
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangedSignatue, float, NewValue);
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStatChangedSignature, int32, NewValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetRowSignature, FUIWidgetRow, WidgetRow);
-
 
 // Widget controller that manages data stream for Overlay Widget (Health globe, Mana globe, On Screen messages)
 UCLASS(BlueprintType, Blueprintable)
@@ -61,10 +62,24 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category="GAS|Messages")
 	FMessageWidgetRowSignature MessageWidgetRowDelegate;
+	
+	UPROPERTY(BlueprintAssignable, Category="GAS|XP")
+	FOnAttributeChangedSignatue OnXPChangedDelegate;
+
+	UPROPERTY(BlueprintAssignable, Category="GAS|Level")
+	FOnPlayerStatChangedSignature OnPlayerLevelChangedDelegate;
+
+
 protected:
+
+	void OnAbilityEquipped(const FGameplayTag& AbilityTag, const FGameplayTag& Status, const FGameplayTag& NewInputTag, const FGameplayTag& OldInputTag) const;
+
+	void OnXPChanged(int32 NewXP);
+	void OnLevelChanged(int32 NewLevel);
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Widget Data")
 	TObjectPtr<UDataTable> MessageWidgetDataTable;
+
 
 	template<typename T>
 	T* GetDataTableRowByTag(UDataTable* DataTable, const FGameplayTag& Tag);

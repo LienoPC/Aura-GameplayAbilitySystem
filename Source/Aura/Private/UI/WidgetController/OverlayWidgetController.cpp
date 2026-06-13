@@ -3,8 +3,12 @@
 
 #include "UI/WidgetController/OverlayWidgetController.h"
 
+#include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAttributeSet.h"
+#include "AbilitySystem/Data/AbilityInfo.h"
+#include "AbilitySystem/Data/LevelUpInfo.h"
+#include "Player/AuraPlayerState.h"
 
 void UOverlayWidgetController::BroadCastInitialValues()
 {
@@ -62,7 +66,70 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 					}
 				}
 			});
+
+		Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent)->AbilitiesGivenDelegate.AddUObject(this, &UOverlayWidgetController::BroadcastAbilityInfo);
+		Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent)->AbilityEquipped.AddUObject(this, &UOverlayWidgetController::OnAbilityEquipped);
 	}
 
+	if (AAuraPlayerState* PS = CastChecked<AAuraPlayerState>(PlayerState))
+	{
+		PS->OnExperienceChanged.AddUObject(this, &UOverlayWidgetController::OnXPChanged);
+		PS->OnLevelChanged.AddUObject(this, &UOverlayWidgetController::OnLevelChanged);
+	}
+
+}
+
+
+void UOverlayWidgetController::OnAbilityEquipped(const FGameplayTag& AbilityTag, const FGameplayTag& Status, const FGameplayTag& NewInputTag, const FGameplayTag& OldInputTag) const
+{
+	FAuraAbilityInfo LastSlotInfo;
+	LastSlotInfo.StatusTag = FAuraGameplayTags::Get().Abilities_Status_Unlocked;
+	LastSlotInfo.InputTag = OldInputTag;
+	LastSlotInfo.AbilityTag = FAuraGameplayTags::Get().Abilities_None;
+
+	// Broadcast empty info if previous slot is a valid slot
+	AbilityInfoDelegate.Broadcast(LastSlotInfo);
+
+
+	FAuraAbilityInfo NewSlotInfo = AbilityInfo->FindAbilityInfoByTag(AbilityTag);
+	NewSlotInfo.StatusTag = Status;
+	NewSlotInfo.InputTag = NewInputTag;
+	// Broadcast the effective equipped ability
+	AbilityInfoDelegate.Broadcast(NewSlotInfo);
+	
+}
+
+void UOverlayWidgetController::OnXPChanged(int32 NewXP)
+{
+	AAuraPlayerState* AS = Cast<AAuraPlayerState>(PlayerState);
+
+	if (!AS)
+		return;
+
+	const ULevelUpInfo* LevelUpInfo = AS->LevelsInfo;
+
+	check(LevelUpInfo);
+
+	const int32 Level = LevelUpInfo->LevelAtXP(NewXP);
+
+	const int32 MaxLevel = LevelUpInfo->Levels.Num();
+
+	if (Level < MaxLevel && Level > 0)
+	{
+		const int32 LevelUpRequirement = LevelUpInfo->Levels[Level].LevelUpRequirement;
+		const int32 PreviousLevelRequirement = LevelUpInfo->Levels[Level - 1].LevelUpRequirement;
+
+		const int32 DeltaLevelRequirement = LevelUpRequirement - PreviousLevelRequirement;
+
+		const int32 XPForThisLevel = NewXP - PreviousLevelRequirement;
+
+		const float PercentageXP = static_cast<float>(XPForThisLevel) / static_cast<float>(DeltaLevelRequirement);
+		OnXPChangedDelegate.Broadcast(PercentageXP);
+	}
+}
+
+void UOverlayWidgetController::OnLevelChanged(int32 NewLevel)
+{
+	OnPlayerLevelChangedDelegate.Broadcast(NewLevel);
 }
 

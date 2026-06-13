@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AuraAbilityTypes.h"
 #include "GameplayEffectTypes.h"
 #include "GameFramework/Actor.h"
 #include "NiagaraSystem.h"
@@ -19,13 +20,14 @@ class AURA_API AAuraProjectile : public AActor
 	
 public:	
 	AAuraProjectile();
+	void OnHit();
 
 	virtual void Destroyed() override;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile")
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovementComponent;
 
 	UPROPERTY(BlueprintReadWrite, meta = (ExposeOnSpawn = true))
-	FGameplayEffectSpecHandle DamageEffectSpecHandle;
+	FDamageEffectParams DamageEffectParams;
 protected:
 	virtual void BeginPlay() override;
 

@@ -39,7 +39,8 @@ AEnemy::AEnemy()
 	
 }
 
-int32 AEnemy::GetPlayerLevel()
+
+int32 AEnemy::GetPlayerLevel_Implementation()
 {
 	return Level;
 }
@@ -60,7 +61,7 @@ void AEnemy::BindOnAttributeChangedCallbacks()
 	}
 
 	// Bind a callback when a particular tag is added
-	AbilitySystemComponent->RegisterGameplayTagEvent(FAuraGameplayTags::Get().Effects_HitReact, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AEnemy::HitReactTagChanged);
+	AbilitySystemComponent->RegisterGameplayTagEvent(FAuraGameplayTags::Get().Abilities_HitReact, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AEnemy::HitReactTagChanged);
 }
 
 void AEnemy::SetCombatTarget_Implementation(AActor* InCombatTarget)
@@ -86,10 +87,16 @@ void AEnemy::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 	
 }
 
-void AEnemy::Die()
+void AEnemy::Die(const FVector& DeathImpulse)
 {
-	Super::Die();
-
+	Super::Die(DeathImpulse);
+	if (AuraAIController)
+	{
+		if (UBlackboardComponent* BlackboardComponent = AuraAIController->GetBlackboardComponent())
+		{
+			BlackboardComponent->SetValueAsBool(FName("IsDead"), true);
+		}
+	}
 	SetLifeSpan(LifeSpan);
 }
 
@@ -136,6 +143,7 @@ void AEnemy::InitAbilityActorInfo()
 
 	if(HasAuthority())
 		InitializeDefaultAttributes();
+	OnAscRegistered.Broadcast(AbilitySystemComponent);
 }
 
 

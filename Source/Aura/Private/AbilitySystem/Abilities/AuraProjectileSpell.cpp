@@ -12,6 +12,8 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 
+
+
 void UAuraProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                            const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
                                            const FGameplayEventData* TriggerEventData)
@@ -29,7 +31,7 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector &ProjectileTargetLocati
 	
 	if (TScriptInterface<ICombatInterface> CombatInterface = GetAvatarActorFromActorInfo())
 	{
-		const FVector SocketLocation = ICombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo(), FAuraGameplayTags::Get().Montage_Attack_Weapon);
+		const FVector SocketLocation = ICombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo(), FAuraGameplayTags::Get().CombatSocket_Attack_Ranged);
 		SpawnTransform.SetLocation(SocketLocation);
 
 		FRotator Rotation = (ProjectileTargetLocation-SocketLocation).Rotation();
@@ -43,23 +45,8 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector &ProjectileTargetLocati
 			Cast<APawn>(GetOwningActorFromActorInfo()),
 			ESpawnActorCollisionHandlingMethod::AlwaysSpawn));
 
-		UAbilitySystemComponent* SourceASC = UAuraAbilitySystemLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
-
-		FGameplayEffectContextHandle EffectContextHandle = SourceASC->MakeEffectContext();
-
-		EffectContextHandle.SetAbility(this);
-		FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), EffectContextHandle);
-
-		// Calculate damage value from curve table and apply it as a "Set By Caller"
-		const FAuraGameplayTags GameplayTags = FAuraGameplayTags::Get();
-		// Loops through all types of damage
-		for (auto& Pair : DamageTypes)
-		{
-			const float ScaledDamage = Pair.Value.GetValueAtLevel(GetAbilityLevel());
-			// Sets the associated damage type using the key
-			UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, Pair.Key, ScaledDamage);
-		}
-		Projectile->DamageEffectSpecHandle = SpecHandle;
+		Projectile->DamageEffectParams = MakeDamageEffectParamsFromClassDefaults(nullptr);
+;
 		Projectile->FinishSpawning(SpawnTransform);
 	}
 }

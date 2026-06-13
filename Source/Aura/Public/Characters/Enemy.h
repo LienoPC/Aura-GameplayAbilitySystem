@@ -40,7 +40,7 @@ public:
 	bool bHighlighted = false;
 
 	/* Combat Interface */
-	virtual int32 GetPlayerLevel() override;
+	virtual int32 GetPlayerLevel_Implementation() override;
 	void BindOnAttributeChangedCallbacks();
 	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
 	virtual AActor* GetCombatTarget_Implementation() const override;
@@ -59,7 +59,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category="Combat")
 	TObjectPtr<AActor> CombatTarget;
 	
-	virtual void Die() override;
+	virtual void Die(const FVector& DeathImpulse) override;
 
 
 protected:
@@ -72,9 +72,7 @@ protected:
 	virtual void InitAbilityActorInfo() override;
 	UPROPERTY(EditAnywhere, Category="Character Class Defaults")
 	int32 Level = 1;
-	UPROPERTY(EditAnywhere, Category="Character Class Defaults")
-	ECharacterClass CharacterClass = ECharacterClass::Warrior;
-	
+
 	// Widget for health bar
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Widget")
 	TObjectPtr<UWidgetComponent> HealthBar;

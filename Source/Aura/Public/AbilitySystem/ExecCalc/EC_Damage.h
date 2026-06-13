@@ -18,8 +18,12 @@ class AURA_API UEC_Damage : public UGameplayEffectExecutionCalculation
 
 public:
 	UEC_Damage();
+	void ComputeDebuff(const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FGameplayEffectSpec& Spec,
+	                   FAggregatorEvaluateParameters EvaluationParameters,const TMap<FGameplayTag, FGameplayEffectAttributeCaptureDefinition>& InTagsToDef) const;
 
-	
+	void ComputeKnockback(const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FGameplayEffectSpec& Spec,
+					   FAggregatorEvaluateParameters EvaluationParameters,const TMap<FGameplayTag, FGameplayEffectAttributeCaptureDefinition>& InTagsToDef) const;
+
 	virtual void Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams, FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const override;
 
 private:

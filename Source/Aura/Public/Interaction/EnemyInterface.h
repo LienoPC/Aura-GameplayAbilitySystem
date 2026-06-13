@@ -31,4 +31,6 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	AActor* GetCombatTarget() const;
+
+	int32 GetXpReward() const;
 };
