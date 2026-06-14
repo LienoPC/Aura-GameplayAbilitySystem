@@ -156,7 +156,6 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 			FVector Knockback = UAuraAbilitySystemLibrary::GetKnockbackForce(Props.EffectContextHandle);
 			if (Knockback != FVector::ZeroVector)
 			{
-				UKismetSystemLibrary::DrawDebugArrow(this, Props.TargetCharacter->GetActorLocation(), Props.TargetCharacter->GetActorLocation() + Knockback, 4.f, FLinearColor::Red, 4.0f);
 				Props.TargetCharacter->LaunchCharacter(Knockback, true, true);
 			}
 		}
