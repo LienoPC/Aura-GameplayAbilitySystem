@@ -119,6 +119,16 @@ public:
 	FGameplayTag Montage_Attack_4;
 	FGameplayTag Montage_Attack_5;
 
+
+	/**
+	 * Player controller
+	 */
+	FGameplayTag Player_Block_InputPressed;
+	FGameplayTag Player_Block_InputHeld;
+	FGameplayTag Player_Block_InputReleased;
+	FGameplayTag Player_Block_Highlight;
+	FGameplayTag Player_Block_CursorTrace;
+
 	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistances;
 	TMap<FGameplayTag, FGameplayTag> DamageTypesToDebuffs;
 private:

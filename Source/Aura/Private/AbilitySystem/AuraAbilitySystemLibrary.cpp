@@ -401,6 +401,42 @@ void UAuraAbilitySystemLibrary::GetLiveEntitiesWithinRadius(const UObject* World
 	
 }
 
+void UAuraAbilitySystemLibrary::GetClosestTargets(int32 MaxTargets, const TArray<AActor*>& Actors,
+	TArray<AActor*>& OutTargets, const FVector& Origin)
+{
+	if (Actors.Num() <= MaxTargets)
+	{
+		OutTargets = Actors;
+		return;
+	}
+
+	OutTargets = Actors;
+
+	while (MaxTargets < OutTargets.Num())
+	{
+		AActor* FarthestActor = nullptr;
+		double FarthestDistance = -1.0f;
+		for (AActor* PotentialTarget : OutTargets)
+		{
+			if (IsValid(PotentialTarget))
+			{
+				const double Distance = (PotentialTarget->GetActorLocation() - Origin).SquaredLength();
+				if (FarthestDistance < Distance)
+				{
+					FarthestDistance = Distance;
+					FarthestActor = PotentialTarget;
+				}
+			}
+		
+		}
+		OutTargets.Remove(FarthestActor);
+	}
+
+	return;
+
+	
+}
+
 bool UAuraAbilitySystemLibrary::IsNotFriend(AActor* FirstActor, AActor* SecondActor)
 {
 	const bool bFirstIsPlayer = FirstActor->ActorHasTag("Player");

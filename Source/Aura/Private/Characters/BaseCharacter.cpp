@@ -133,6 +133,11 @@ FOnDeath ABaseCharacter::GetOnDeathDelegate()
 	return OnDeath;
 }
 
+USkeletalMeshComponent* ABaseCharacter::GetWeapon_Implementation()
+{
+	return Weapon;
+}
+
 
 void ABaseCharacter::MulticastHandleDeath_Implementation(const FVector& DeathImpulse)
 {

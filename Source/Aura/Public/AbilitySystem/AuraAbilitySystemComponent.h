@@ -27,6 +27,8 @@ public:
 	void AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbilities);
 	void AddCharacterPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& PassiveAbilities);
 
+	void AbilityInputTagPressed(const FGameplayTag& InputTag);
+	
 	// Iterate through abilities and activate all abilities (not already active) associated with a particular Tag.
 	void AbilityInputTagHeld(const FGameplayTag& InputTag);
 

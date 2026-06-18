@@ -311,6 +311,26 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	Instance.Montage_Attack_5 = UGameplayTagsManager::Get().AddNativeGameplayTag(
 	FName("Montage.Attack.5"), FString("Attack 5")
 	);
+
+	/**
+	 * Player Tags
+	 */
+	Instance.Player_Block_CursorTrace = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("Player.Block.CursorTrace"), FString("Block tracing under the cursor.")
+	);
+	
+	Instance.Player_Block_InputHeld = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("Player.Block.InputHeld"), FString("Block input held callback for input.")
+	);
+
+	Instance.Player_Block_InputPressed = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("Player.Block.InputPressed"), FString("Block input pressed callback for input.")
+	);
+	
+	Instance.Player_Block_InputReleased = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("Player.Block.InputReleased"), FString("Block input released callback for input.")
+	);
+	
 	
 	UGameplayTagsManager::Get().DoneAddingNativeTags();
 }
