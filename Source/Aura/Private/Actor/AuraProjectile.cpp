@@ -61,6 +61,8 @@ void AAuraProjectile::BeginPlay()
 
 void AAuraProjectile::OnOverlap(AActor* Other)
 {
+	if (DamageEffectParams.SourceAbilitySystemComponent == nullptr)
+		return;
 	AActor* SourceAvatarActor = DamageEffectParams.SourceAbilitySystemComponent->GetAvatarActor();
 	if(SourceAvatarActor == Other)
 		return;
@@ -71,7 +73,6 @@ void AAuraProjectile::OnOverlap(AActor* Other)
 	if(!bHit){
 		OnHit();
 	}
-
 	
 	if(HasAuthority())
 	{

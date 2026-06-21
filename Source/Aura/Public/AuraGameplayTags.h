@@ -79,6 +79,7 @@ public:
 	 * Cooldowns
 	 */
 	FGameplayTag Cooldown_Fire_FireBolt;
+	FGameplayTag Cooldown_Lightning_Electrocute;
 
 	/*
 	 * Damage Types

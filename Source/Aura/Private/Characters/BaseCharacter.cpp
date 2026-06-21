@@ -128,7 +128,7 @@ FOnASCRegistered ABaseCharacter::GetOnAscRegisteredDelegate()
 	return OnAscRegistered;
 }
 
-FOnDeath ABaseCharacter::GetOnDeathDelegate()
+FOnDeath& ABaseCharacter::GetOnDeathDelegate()
 {
 	return OnDeath;
 }
