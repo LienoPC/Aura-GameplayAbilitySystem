@@ -47,8 +47,8 @@ public:
 	
 	void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
-	UPROPERTY(EditAnywhere, Category="Movement")
-	float BaseWalkSpeed = 300.f;
+	virtual void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount) override;
+
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category="Combat")
 	float LifeSpan = 5.f;

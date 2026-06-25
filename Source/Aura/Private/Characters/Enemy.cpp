@@ -34,7 +34,7 @@ AEnemy::AEnemy()
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
-
+	BaseWalkSpeed = 300.f;
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 	
 }
@@ -62,6 +62,7 @@ void AEnemy::BindOnAttributeChangedCallbacks()
 
 	// Bind a callback when a particular tag is added
 	AbilitySystemComponent->RegisterGameplayTagEvent(FAuraGameplayTags::Get().Abilities_HitReact, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AEnemy::HitReactTagChanged);
+	AbilitySystemComponent->RegisterGameplayTagEvent(FAuraGameplayTags::Get().Debuff_Stun, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AEnemy::StunTagChanged);
 }
 
 void AEnemy::SetCombatTarget_Implementation(AActor* InCombatTarget)
@@ -85,6 +86,15 @@ void AEnemy::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 		AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), bHitReacting);
 	}
 	
+}
+
+void AEnemy::StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+	Super::StunTagChanged(CallbackTag, NewCount);
+	if (AuraAIController && AuraAIController->GetBlackboardComponent())
+	{
+		AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("Stunned"), bIsStunned);
+	}
 }
 
 void AEnemy::Die(const FVector& DeathImpulse)

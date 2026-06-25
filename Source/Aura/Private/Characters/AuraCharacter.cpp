@@ -5,6 +5,7 @@
 #include "Characters/AuraCharacter.h"
 
 #include "AbilitySystemComponent.h"
+#include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/Data/LevelUpInfo.h"
 #include "Camera/CameraComponent.h"
@@ -149,6 +150,8 @@ void AAuraCharacter::InitAbilityActorInfo()
 	AttributeSet = AuraPlayerState->GetAttributeSet();
 	
 	OnAscRegistered.Broadcast(AbilitySystemComponent);
+	AbilitySystemComponent->RegisterGameplayTagEvent(FAuraGameplayTags::Get().Debuff_Stun, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AAuraCharacter::StunTagChanged);
+
 	// Initialize HUD
 	if(AAuraPlayerController* AuraPlayerController = Cast<AAuraPlayerController>(GetController()))
 	{
@@ -201,6 +204,26 @@ void AAuraCharacter::OnRep_PlayerState()
 	InitAbilityActorInfo();
 
 	
+}
+
+void AAuraCharacter::OnRep_Stunned()
+{
+	if (UAuraAbilitySystemComponent* ASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent))
+	{
+		FGameplayTagContainer BlockedTags;
+		BlockedTags.AddTag(FAuraGameplayTags::Get().Player_Block_Highlight);
+		BlockedTags.AddTag(FAuraGameplayTags::Get().Player_Block_CursorTrace);
+		BlockedTags.AddTag(FAuraGameplayTags::Get().Player_Block_InputPressed);
+		BlockedTags.AddTag(FAuraGameplayTags::Get().Player_Block_InputHeld);
+		BlockedTags.AddTag(FAuraGameplayTags::Get().Player_Block_InputReleased);
+		if (bIsStunned)
+		{
+			ASC->AddLooseGameplayTags(BlockedTags);
+		}else
+		{
+			ASC->RemoveLooseGameplayTags(BlockedTags);
+		}
+	}
 }
 
 

@@ -23,6 +23,7 @@ class AURA_API ABaseCharacter : public ACharacter, public IAbilitySystemInterfac
 
 public:
 	ABaseCharacter();
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void Destroyed() override;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() const;
@@ -58,6 +59,14 @@ public:
 	UFUNCTION(NetMulticast, Reliable)	
 	virtual void MulticastHandleDeath(const FVector& DeathImpulse);
 
+	UPROPERTY(ReplicatedUsing=OnRep_Stunned, BlueprintReadOnly)
+	bool bIsStunned = false;
+	UFUNCTION()
+	virtual void OnRep_Stunned();
+	UPROPERTY(EditAnywhere, Category="Movement")
+	float BaseWalkSpeed = 600.f;
+
+	virtual void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 protected:
 	virtual void BeginPlay() override;
 
