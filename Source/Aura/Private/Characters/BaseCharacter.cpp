@@ -18,8 +18,12 @@ ABaseCharacter::ABaseCharacter()
 	PrimaryActorTick.bCanEverTick = false;
 
 	BurnDebuffNiagaraComponent = CreateDefaultSubobject<UDebuffNiagaraComponent>(TEXT("BurnDebuff"));
-	BurnDebuffNiagaraComponent->SetupAttachment(GetRootComponent());
+	BurnDebuffNiagaraComponent->SetupAttachment(GetMesh());
 	BurnDebuffNiagaraComponent->DebuffTag = FAuraGameplayTags::Get().Debuff_Burn;
+
+	StunDebuffNiagaraComponent = CreateDefaultSubobject<UDebuffNiagaraComponent>(TEXT("StunDebuff"));
+	StunDebuffNiagaraComponent->SetupAttachment(GetMesh());
+	StunDebuffNiagaraComponent->DebuffTag = FAuraGameplayTags::Get().Debuff_Stun;
 	
 	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>("Weapon");
 
@@ -36,6 +40,8 @@ void ABaseCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>&
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ABaseCharacter, bIsStunned);
+	DOREPLIFETIME(ABaseCharacter, bIsBurned);
+	DOREPLIFETIME(ABaseCharacter, bIsBeingShocked);
 }
 
 void ABaseCharacter::Destroyed()
@@ -131,7 +137,7 @@ ECharacterClass ABaseCharacter::GetCharacterClass_Implementation()
 	return CharacterClass;
 }
 
-FOnASCRegistered ABaseCharacter::GetOnAscRegisteredDelegate()
+FOnASCRegistered& ABaseCharacter::GetOnAscRegisteredDelegate()
 {
 	return OnAscRegistered;
 }
@@ -144,6 +150,16 @@ FOnDeath& ABaseCharacter::GetOnDeathDelegate()
 USkeletalMeshComponent* ABaseCharacter::GetWeapon_Implementation()
 {
 	return Weapon;
+}
+
+bool ABaseCharacter::IsBeingShocked_Implementation() const
+{
+	return bIsBeingShocked;
+}
+
+void ABaseCharacter::SetIsBeingShocked_Implementation(const bool InBeingShocked)
+{
+	bIsBeingShocked = InBeingShocked;
 }
 
 
@@ -170,6 +186,12 @@ void ABaseCharacter::MulticastHandleDeath_Implementation(const FVector& DeathImp
 	Dissolve();
 	bDead = true;
 	OnDeath.Broadcast(this);
+	BurnDebuffNiagaraComponent->Deactivate();
+	StunDebuffNiagaraComponent->Deactivate();
+}
+
+void ABaseCharacter::OnRep_Burned()
+{
 }
 
 void ABaseCharacter::OnRep_Stunned()

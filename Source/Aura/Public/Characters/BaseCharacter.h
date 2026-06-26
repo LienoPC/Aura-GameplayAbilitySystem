@@ -48,10 +48,13 @@ public:
 
 	virtual ECharacterClass GetCharacterClass_Implementation() override;
 
-	virtual FOnASCRegistered GetOnAscRegisteredDelegate() override;
+	virtual FOnASCRegistered& GetOnAscRegisteredDelegate() override;
 	virtual FOnDeath& GetOnDeathDelegate() override;
 
 	virtual USkeletalMeshComponent* GetWeapon_Implementation() override;
+
+	virtual bool IsBeingShocked_Implementation() const override;
+	virtual void SetIsBeingShocked_Implementation(const bool InBeingShocked) override;
 	FOnASCRegistered OnAscRegistered;
 	FOnDeath OnDeath;
 	// End Combat Interface
@@ -59,10 +62,20 @@ public:
 	UFUNCTION(NetMulticast, Reliable)	
 	virtual void MulticastHandleDeath(const FVector& DeathImpulse);
 
+	UPROPERTY(ReplicatedUsing=OnRep_Burned, BlueprintReadOnly)
+	bool bIsBurned = false;
+	UFUNCTION()
+	virtual void OnRep_Burned();
+	
 	UPROPERTY(ReplicatedUsing=OnRep_Stunned, BlueprintReadOnly)
 	bool bIsStunned = false;
 	UFUNCTION()
 	virtual void OnRep_Stunned();
+
+	UPROPERTY(Replicated, BlueprintReadOnly)
+	bool bIsBeingShocked = false;
+	
+	
 	UPROPERTY(EditAnywhere, Category="Movement")
 	float BaseWalkSpeed = 600.f;
 
@@ -145,6 +158,9 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UDebuffNiagaraComponent> BurnDebuffNiagaraComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UDebuffNiagaraComponent> StunDebuffNiagaraComponent;
 
 	/** Minions */
 	UPROPERTY(EditAnywhere)

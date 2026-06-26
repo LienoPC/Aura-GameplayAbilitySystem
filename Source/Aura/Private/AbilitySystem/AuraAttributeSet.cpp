@@ -148,10 +148,12 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 			// Upon dying, send XP
 			SendXPEvent(Props);
 		}else{
-			FGameplayTagContainer TagContainer;
-			TagContainer.AddTag(FAuraGameplayTags::Get().Abilities_HitReact);
-			Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
-
+			if (Props.TargetCharacter->Implements<UCombatInterface>() && !ICombatInterface::Execute_IsBeingShocked(Props.TargetCharacter))
+			{
+				FGameplayTagContainer TagContainer;
+				TagContainer.AddTag(FAuraGameplayTags::Get().Abilities_HitReact);
+				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+			}
 			// Apply here knockback
 			FVector Knockback = UAuraAbilitySystemLibrary::GetKnockbackForce(Props.EffectContextHandle);
 			if (Knockback != FVector::ZeroVector)

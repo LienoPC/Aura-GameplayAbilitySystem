@@ -15,6 +15,7 @@
 #include "Player/AuraPlayerState.h"
 #include "UI/HUD/AuraHUD.h"
 #include "NiagaraComponent.h"
+#include "AbilitySystem/Debuff/DebuffNiagaraComponent.h"
 
 AAuraCharacter::AAuraCharacter()
 {
@@ -206,6 +207,17 @@ void AAuraCharacter::OnRep_PlayerState()
 	
 }
 
+void AAuraCharacter::OnRep_Burned()
+{
+	if (bIsStunned)
+	{
+		BurnDebuffNiagaraComponent->Activate();
+	}else
+	{
+		BurnDebuffNiagaraComponent->Deactivate();
+	}
+}
+
 void AAuraCharacter::OnRep_Stunned()
 {
 	if (UAuraAbilitySystemComponent* ASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent))
@@ -219,9 +231,11 @@ void AAuraCharacter::OnRep_Stunned()
 		if (bIsStunned)
 		{
 			ASC->AddLooseGameplayTags(BlockedTags);
+			StunDebuffNiagaraComponent->Activate();
 		}else
 		{
 			ASC->RemoveLooseGameplayTags(BlockedTags);
+			StunDebuffNiagaraComponent->Deactivate();
 		}
 	}
 }

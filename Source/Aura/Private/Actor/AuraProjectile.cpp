@@ -16,6 +16,7 @@ AAuraProjectile::AAuraProjectile()
 	PrimaryActorTick.bCanEverTick = false;
 
 	bReplicates = true;
+
 	// Create projectile movement component
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(FName("ProjectileMovement"));
 	ProjectileMovementComponent->InitialSpeed = 550.f;
@@ -55,6 +56,8 @@ void AAuraProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 	SetLifeSpan(LifeSpan);
+	SetReplicateMovement(true);
+
 	// Start looping sound by spawning it and attaching it to the actor.
 	LoopingSoundComponent = UGameplayStatics::SpawnSoundAttached(FlySound, GetRootComponent());
 }
