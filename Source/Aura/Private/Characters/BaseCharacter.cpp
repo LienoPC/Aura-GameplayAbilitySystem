@@ -7,6 +7,7 @@
 #include "GameplayEffect.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/Debuff/DebuffNiagaraComponent.h"
+#include "AbilitySystem/Passive/PassiveNiagaraComponent.h"
 #include "Aura/Aura.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -15,7 +16,7 @@
 
 ABaseCharacter::ABaseCharacter()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	BurnDebuffNiagaraComponent = CreateDefaultSubobject<UDebuffNiagaraComponent>(TEXT("BurnDebuff"));
 	BurnDebuffNiagaraComponent->SetupAttachment(GetMesh());
@@ -34,6 +35,25 @@ ABaseCharacter::ABaseCharacter()
 	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Projectile, ECR_Overlap);
 	GetMesh()->SetGenerateOverlapEvents(true);
+
+	EffectAttachComponent = CreateDefaultSubobject<USceneComponent>(TEXT("EffectAttach"));
+	EffectAttachComponent->SetupAttachment(GetRootComponent());
+
+	HaloOfProtectionNiagaraSystem = CreateDefaultSubobject<UPassiveNiagaraComponent>(TEXT("HaloOfProtectionNiagara"));
+	HaloOfProtectionNiagaraSystem->SetupAttachment(EffectAttachComponent);
+
+	LifeSiphonNiagaraSystem = CreateDefaultSubobject<UPassiveNiagaraComponent>(TEXT("LifeSiphonNiagara"));
+	LifeSiphonNiagaraSystem->SetupAttachment(EffectAttachComponent);
+
+	ManaSiphonNiagaraSystem = CreateDefaultSubobject<UPassiveNiagaraComponent>(TEXT("ManaSiphonNiagara"));
+	ManaSiphonNiagaraSystem->SetupAttachment(EffectAttachComponent);
+
+}
+
+void ABaseCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	EffectAttachComponent->SetWorldRotation(FRotator(0, 0, 0));
 }
 
 void ABaseCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const

@@ -75,6 +75,15 @@ AActor* AEnemy::GetCombatTarget_Implementation() const
 	return CombatTarget;
 }
 
+void AEnemy::SetIsBeingShocked_Implementation(const bool InBeingShocked)
+{
+	Super::SetIsBeingShocked_Implementation(InBeingShocked);
+	if (AuraAIController && AuraAIController->GetBlackboardComponent())
+	{
+		AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("Shocked"), bIsBeingShocked);
+	}
+}
+
 void AEnemy::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 {
 	bHitReacting = NewCount > 0;

@@ -11,6 +11,9 @@ DECLARE_MULTICAST_DELEGATE(FAbilitiesGiven);
 DECLARE_DELEGATE_OneParam(FForEachAbility, const FGameplayAbilitySpec);
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FAbilityStatusChanged, const FGameplayTag& /** Ability Tag */, const FGameplayTag& /** Status Tag */, const int32 /** Level */)
 DECLARE_MULTICAST_DELEGATE_FourParams(FAbilityEquipped, const FGameplayTag& /** AbilityType*/, const FGameplayTag& /** Status */, const FGameplayTag& /** Input */, const FGameplayTag& /** OldInput */)
+DECLARE_MULTICAST_DELEGATE_OneParam(FDeactivatePassiveAbility, const FGameplayTag& /** Ability Tag */);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FActivatePassiveEffect, const FGameplayTag& /** Ability Tag */, const bool /** bActivate */);
+
 
 /**
  * 
@@ -43,6 +46,13 @@ public:
 
 	void ClearInputTag(FGameplayAbilitySpec* AbilitySpec);
 	void ClearAbilitiesOfInputTag(const FGameplayTag& InputTag);
+	bool InputSlotIsEmpty(const FGameplayTag& InputTag);
+	bool IsPassiveAbilityFromSpec(const FGameplayAbilitySpec& Spec);
+	static bool AbilityHasAnyInputTag(const FGameplayAbilitySpec& Spec);
+	void AssignInputTagToAbility(FGameplayAbilitySpec& Spec, const FGameplayTag& InputTag);
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastActivatePassiveEffect(const FGameplayTag& AbilityTag, bool bActivate);
+	FGameplayAbilitySpec* GetAbilitySpecFromInputTag(const FGameplayTag& InputTag);
 
 	UFUNCTION(Server, Reliable)
 	void ServerUpgradeAttribute(const FGameplayTag& AttributeTag);
@@ -70,7 +80,8 @@ public:
 	FAbilitiesGiven AbilitiesGivenDelegate;
 	FAbilityStatusChanged AbilityStatusChangedDelegate;
 	FAbilityEquipped AbilityEquipped;
-
+	FDeactivatePassiveAbility DeactivatePassiveAbilityDelegate;
+	FActivatePassiveEffect ActivatePassiveEffectDelegate;
 protected:
 
 	virtual void OnRep_ActivateAbilities() override;

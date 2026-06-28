@@ -222,6 +222,9 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FName("Abilities.HitReact"), FString("Tag granted when hit reacting")
 		);
 
+	/**
+	 * Offensive spells
+	 */
 
 	Instance.Abilities_Fire_FireBolt = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Fire.FireBolt"), FString("Firebolt ability")
@@ -229,6 +232,9 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 
 	Instance.Abilities_Lightning_Electrocute = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Lightning.Electrocute"), FString("Electrocute ability")
+		);
+	Instance.Abilities_Arcane_ArcaneShards = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Arcane.ArcaneShards"), FString("Arcane Shards ability")
 		);
 
 	
@@ -259,8 +265,22 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	Instance.Abilities_Type_None = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Type.None"), FString("Generic abilities")
 		);
-	
 
+	/**
+	 * Passive spells
+	 */
+
+	Instance.Abilities_Passive_LifeSiphon = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("Abilities.Passive.LifeSiphon"), FString("Life siphon ability")
+	);
+	
+	Instance.Abilities_Passive_ManaSiphon = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("Abilities.Passive.ManaSiphon"), FString("Mana siphon ability")
+	);
+
+	Instance.Abilities_Passive_HaloOfProtection = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("Abilities.Passive.HaloOfProtection"), FString("Mana siphon ability")
+	);
 /**
  * Cooldowns
  */

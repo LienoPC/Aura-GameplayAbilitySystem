@@ -44,6 +44,7 @@ public:
 	void BindOnAttributeChangedCallbacks();
 	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
 	virtual AActor* GetCombatTarget_Implementation() const override;
+	virtual void SetIsBeingShocked_Implementation(const bool InBeingShocked) override;
 	
 	void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 

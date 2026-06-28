@@ -46,4 +46,10 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void AddToSpellPoints(const int32& InSpellPoints);
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void ShowMagicCircle(UMaterialInterface* DecalMaterial = nullptr);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void HideMagicCircle();
+	
 };
