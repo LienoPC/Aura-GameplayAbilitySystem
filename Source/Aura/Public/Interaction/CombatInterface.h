@@ -11,6 +11,7 @@
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnASCRegistered, UAbilitySystemComponent*);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeath, AActor*, DeadActor);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnDamageSignature, float /** DamageAmount */);
 
 class UNiagaraComponent;
 /**
@@ -99,7 +100,8 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void SetIsBeingShocked(const bool InBeingShocked); 
-	
+
+	virtual FOnDamageSignature& GetOnDamageTakenDelegate() = 0;
 	virtual FOnASCRegistered& GetOnAscRegisteredDelegate() = 0;
 	virtual FOnDeath& GetOnDeathDelegate() = 0;
 };

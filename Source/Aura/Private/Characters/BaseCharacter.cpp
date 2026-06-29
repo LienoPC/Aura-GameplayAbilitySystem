@@ -64,6 +64,14 @@ void ABaseCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>&
 	DOREPLIFETIME(ABaseCharacter, bIsBeingShocked);
 }
 
+float ABaseCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
+	class AController* EventInstigator, AActor* DamageCauser)
+{
+	const float DamageTaken = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	OnDamageDelegate.Broadcast(DamageTaken);
+	return DamageTaken;
+}
+
 void ABaseCharacter::Destroyed()
 {
 	OnDestroyed.Broadcast(this);
@@ -208,6 +216,11 @@ void ABaseCharacter::MulticastHandleDeath_Implementation(const FVector& DeathImp
 	OnDeath.Broadcast(this);
 	BurnDebuffNiagaraComponent->Deactivate();
 	StunDebuffNiagaraComponent->Deactivate();
+}
+
+FOnDamageSignature& ABaseCharacter::GetOnDamageTakenDelegate()
+{
+	return OnDamageDelegate;
 }
 
 void ABaseCharacter::OnRep_Burned()

@@ -10,6 +10,7 @@
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "Interaction/CombatInterface.h"
+#include "Kismet/GameplayStatics.h"
 
 // Local struct that works with static variables to contains CaptureDefinition variables.
 struct AuraDamageStatics
@@ -144,6 +145,8 @@ void UEC_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionPara
 	int32 SourceAvatarLevel = 1;
 	int32 TargetAvatarLevel = 1;
 
+	FGameplayEffectContextHandle EffectContextHandle = Spec.GetContext();
+
 	if (SourceAvatar->Implements<UCombatInterface>())
 	{
 		SourceAvatarLevel = ICombatInterface::Execute_GetPlayerLevel(SourceAvatar);
@@ -182,8 +185,31 @@ void UEC_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionPara
 
 		// Reduce damage using resistances
 		float DamageTypeValue = Spec.GetSetByCallerMagnitude(Pair.Key, false);
+		if (DamageTypeValue <= 0.f)
+			continue;
+
 		DamageTypeValue *= (100.f-Resistance)/100.f;
-		
+
+		if (UAuraAbilitySystemLibrary::IsRadialDamage(EffectContextHandle))
+		{
+			if (TScriptInterface<ICombatInterface> CombatInterface = TargetAvatar)
+			{
+				CombatInterface->GetOnDamageTakenDelegate().AddLambda([&DamageTypeValue] (float InDamage)
+				{
+					DamageTypeValue = InDamage;
+				});
+			}
+			UGameplayStatics::ApplyRadialDamageWithFalloff(TargetAvatar,
+				DamageTypeValue,
+				0.f,
+				UAuraAbilitySystemLibrary::GetRadialDamageOrigin(EffectContextHandle),
+				UAuraAbilitySystemLibrary::GetRadialDamageInnerRadius(EffectContextHandle),
+				UAuraAbilitySystemLibrary::GetRadialDamageOuterRadius(EffectContextHandle),
+				1.0f,
+				UDamageType::StaticClass(),
+				TArray<AActor*>(),
+				SourceAvatar);
+		}
 		Damage += DamageTypeValue;
 	}
 	
@@ -203,7 +229,6 @@ void UEC_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionPara
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().ArmorPenetrationDef, EvaluationParameters, SourceArmorPenetration);
 	SourceArmorPenetration = FMath::Max(SourceArmorPenetration, 0.f);
 
-	FGameplayEffectContextHandle EffectContextHandle = Spec.GetContext();
 	
 	// If block, Halve the damage
 	const bool bBlock = FMath::RandRange(1, 100) < BlockChance;
