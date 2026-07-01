@@ -281,9 +281,9 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	Instance.Abilities_Passive_HaloOfProtection = UGameplayTagsManager::Get().AddNativeGameplayTag(
 	FName("Abilities.Passive.HaloOfProtection"), FString("Mana siphon ability")
 	);
-/**
- * Cooldowns
- */
+	/**
+	 * Cooldowns
+	 */
 	Instance.Cooldown_Fire_FireBolt = UGameplayTagsManager::Get().AddNativeGameplayTag(
 	FName("Cooldown.Fire.FireBolt"), FString("Firebolt ability cooldown")
 	);
@@ -291,6 +291,10 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 
 	Instance.Cooldown_Lightning_Electrocute = UGameplayTagsManager::Get().AddNativeGameplayTag(
 	FName("Cooldown.Lightning.Electrocute"), FString("Electrocute ability cooldown")
+	);
+
+	Instance.Cooldown_Arcane_ArcaneShards = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("Cooldown.Arcane.ArcaneShards"), FString("ArcaneShards ability cooldown")
 	);
 	
 	/*
