@@ -134,4 +134,5 @@ FString UAuraFireBolt::GetNextLevelDescription(int32 Level)
 						"damage with a chance to burn</>\n\n"
 						),
 						// Values
-						Level, ManaCost, Cooldown, FMath::Min(Level, NumProjectiles), DamageVal);}
+						Level, ManaCost, Cooldown, FMath::Min(Level, NumProjectiles), DamageVal);
+}

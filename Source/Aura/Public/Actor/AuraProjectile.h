@@ -36,10 +36,10 @@ protected:
 
 	// Play the sound and spawn the effect of destroying projectile
 	UFUNCTION(BlueprintCallable)
-	void OnOverlap(AActor* Other);
+	virtual void OnOverlap(AActor* Other);
 
 	UFUNCTION(BlueprintCallable)
-	void OnEndOverlap(AActor* Other);
+	virtual void OnEndOverlap(AActor* Other);
 
 	// Niagara effect played whenever the projectile hits something and it's destroyed.
 	UPROPERTY(EditAnywhere)
