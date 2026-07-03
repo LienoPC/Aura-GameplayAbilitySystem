@@ -14,11 +14,23 @@ class AURA_API AAuraFireball : public AAuraProjectile
 {
 	GENERATED_BODY()
 
+public:
+	UFUNCTION(BlueprintImplementableEvent)
+	void StartOutgoingTimeline();
+
+
+	UPROPERTY(BlueprintReadWrite)
+	TObjectPtr<AActor> ReturnToActor;
+	
+	UPROPERTY(BlueprintReadWrite)
+	FDamageEffectParams ExplosionDamageParams;
+	
 protected:
 
 	virtual void BeginPlay() override;
 	
 	virtual void OnOverlap(AActor* Other) override;
 	virtual void OnEndOverlap(AActor* Other) override;
-	
+
+
 };

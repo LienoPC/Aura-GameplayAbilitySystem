@@ -20,6 +20,8 @@ class AURA_API AAuraProjectile : public AActor
 	
 public:	
 	AAuraProjectile();
+
+	UFUNCTION(BlueprintCallable)
 	void OnHit();
 
 	virtual void Destroyed() override;
@@ -41,6 +43,8 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	virtual void OnEndOverlap(AActor* Other);
 
+	bool IsValidOverlap(AActor* Other);
+
 	// Niagara effect played whenever the projectile hits something and it's destroyed.
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UNiagaraSystem> ImpactEffect;
@@ -56,10 +60,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	float LifeSpan = 15.f;
 
-	
+	bool bHit = false;
+
 private:
 
 	TObjectPtr<UAudioComponent> LoopingSoundComponent;
 	
-	bool bHit = false;
 };

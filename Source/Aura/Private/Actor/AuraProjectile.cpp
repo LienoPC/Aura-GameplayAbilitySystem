@@ -64,14 +64,9 @@ void AAuraProjectile::BeginPlay()
 
 void AAuraProjectile::OnOverlap(AActor* Other)
 {
-	if (DamageEffectParams.SourceAbilitySystemComponent == nullptr)
+	if (!IsValidOverlap(Other))
 		return;
-	AActor* SourceAvatarActor = DamageEffectParams.SourceAbilitySystemComponent->GetAvatarActor();
-	if(SourceAvatarActor == Other)
-		return;
-
-	if (!UAuraAbilitySystemLibrary::IsNotFriend(SourceAvatarActor, Other))
-		return;
+	
 	// Play Impact Sound
 	if(!bHit){
 		OnHit();
@@ -102,4 +97,18 @@ void AAuraProjectile::OnOverlap(AActor* Other)
 
 void AAuraProjectile::OnEndOverlap(AActor* Other)
 {
+}
+
+bool AAuraProjectile::IsValidOverlap(AActor* Other)
+{
+	if (DamageEffectParams.SourceAbilitySystemComponent == nullptr)
+		return false;
+	AActor* SourceAvatarActor = DamageEffectParams.SourceAbilitySystemComponent->GetAvatarActor();
+	if(SourceAvatarActor == Other)
+		return false;
+
+	if (!UAuraAbilitySystemLibrary::IsNotFriend(SourceAvatarActor, Other))
+		return false;
+
+	return true;
 }

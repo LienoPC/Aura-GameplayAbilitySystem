@@ -153,4 +153,19 @@ public:
 	 */
 
 	static int32 GetGrantedXP(UWorld* WorldContext, const ECharacterClass CharacterClass, int32 Level);
+
+	/**
+	 * Damage Effect Params
+	 */
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|DamageEffect")
+	static void SetIsRadialDamageEffectParams(UPARAM(ref)FDamageEffectParams& DamageEffectParams, bool Value, float InnerRadius, float OuterRadius, FVector Origin);
+
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|DamageEffect")
+	static void SetKnockbackDirection(UPARAM(ref)FDamageEffectParams& DamageEffectParams, FVector KnockbackDirection, float MagnitudeOverride = 0.0f);
+
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|DamageEffect")
+	static void SetDeathImpulseDirection(UPARAM(ref)FDamageEffectParams& DamageEffectParams, FVector ImpulseDirection,  float MagnitudeOverride = 0.0f);
+
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|DamageEffect")
+	static void SetTargeASCDamageEffectParams(UPARAM(ref)FDamageEffectParams& DamageEffectParams, UAbilitySystemComponent* TargetASC);
 };
