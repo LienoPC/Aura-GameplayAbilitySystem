@@ -22,7 +22,7 @@ public:
 	AAuraProjectile();
 
 	UFUNCTION(BlueprintCallable)
-	void OnHit();
+	virtual void OnHit();
 
 	virtual void Destroyed() override;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile")
@@ -57,13 +57,11 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<USoundBase> FlySound;
 
+	TObjectPtr<UAudioComponent> LoopingSoundComponent;
+
 	UPROPERTY(EditDefaultsOnly)
 	float LifeSpan = 15.f;
 
 	bool bHit = false;
-
-private:
-
-	TObjectPtr<UAudioComponent> LoopingSoundComponent;
 	
 };

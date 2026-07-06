@@ -148,10 +148,10 @@ public:
 
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayMechanics")
 	static TArray<FVector> EvenlyRotatedVectors(const FVector& ForwardVector, const FVector& Axis, const float Spread,  const int32 NumVectors);
-	/*
+
+	/**
 	 * Levels and XP
 	 */
-
 	static int32 GetGrantedXP(UWorld* WorldContext, const ECharacterClass CharacterClass, int32 Level);
 
 	/**

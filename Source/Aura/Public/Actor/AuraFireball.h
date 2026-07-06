@@ -18,7 +18,8 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void StartOutgoingTimeline();
 
-
+	virtual void OnHit() override;
+	
 	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<AActor> ReturnToActor;
 	
