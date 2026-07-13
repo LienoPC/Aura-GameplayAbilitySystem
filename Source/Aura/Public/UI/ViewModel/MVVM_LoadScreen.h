@@ -1,0 +1,65 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "MVVMViewModelBase.h"
+#include "MVVM_LoadScreen.generated.h"
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSlotSelected);
+
+class UMVVM_LoadSlot;
+/**
+ * LoadScreen ViewModel class.
+ */
+UCLASS()
+class AURA_API UMVVM_LoadScreen : public UMVVMViewModelBase
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(BlueprintAssignable)
+	FSlotSelected SlotSelected;
+	
+	void InitializeLoadSlot();
+
+	UFUNCTION(BlueprintPure)
+	UMVVM_LoadSlot* GetLoadSlotViewModelByIndex(int32 Index) const;
+
+	/**
+	 * Called when new slot is pressed
+	 * @param Index 
+	 * @param SlotName 
+	 */
+	UFUNCTION(BlueprintCallable)
+	void NewSlotButtonPressed(int32 Slot, const FString& SlotName);
+
+	/**
+	 * Interface for new game.
+	 * @param Slot 
+	 */
+	UFUNCTION(BlueprintCallable)
+	void NewGameButtonPressed(int32 Slot);
+
+	UFUNCTION(BlueprintCallable)
+	void SelectSlotButtonPressed(int32 Slot);
+
+	void LoadData();
+	
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UMVVM_LoadSlot> LoadSlotViewModelClass;
+
+
+private:
+
+	UPROPERTY()
+	TMap<int32, UMVVM_LoadSlot*> LoadSlots;
+
+	UPROPERTY()
+	TObjectPtr<UMVVM_LoadSlot> LoadSlot_0;
+	UPROPERTY()
+	TObjectPtr<UMVVM_LoadSlot> LoadSlot_1;
+	UPROPERTY()
+	TObjectPtr<UMVVM_LoadSlot> LoadSlot_2;
+};
