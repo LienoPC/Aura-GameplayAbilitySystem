@@ -20,17 +20,34 @@ class AURA_API AAuraGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 
 public:
+	void SaveSlotData(UMVVM_LoadSlot* LoadSlot, int32 SlotIndex);
 
+	ULoadScreenSaveGame* GetSaveSlotData(const FString& SlotName, int32 SlotIndex);
+
+	void TravelToMap(UMVVM_LoadSlot* LoadSlot);
+	
+	static void DeleteSaveSlotData(const FString& SlotName, int32 SlotIndex);
+	
+	
 	UPROPERTY(EditDefaultsOnly, Category="Character Class Defaults")
 	TObjectPtr<UCharacterClassInfo> CharacterClassInfo;
 
 	UPROPERTY(EditDefaultsOnly, Category="Ability Info")
 	TObjectPtr<UAbilityInfo> AbilityInfo;
 
-	void SaveSlotData(UMVVM_LoadSlot* LoadSlot, int32 SlotIndex);
 
-	ULoadScreenSaveGame* GetSaveSlotData(const FString& SlotName, int32 SlotIndex);
+	UPROPERTY(EditDefaultsOnly)
+	FString StartingMapName;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSoftObjectPtr<UWorld> StartingMap;
+	
+	UPROPERTY(EditDefaultsOnly)
+	TMap<FString, TSoftObjectPtr<UWorld>> Maps;
+	
 protected:
+	virtual void BeginPlay() override;
+
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<USaveGame> LoadScreenSaveGameClass;

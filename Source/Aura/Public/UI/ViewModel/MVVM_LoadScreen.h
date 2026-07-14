@@ -45,6 +45,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SelectSlotButtonPressed(int32 Slot);
 
+	UFUNCTION(BlueprintCallable)
+	void DeleteButtonPressed();
+
+	UFUNCTION(BlueprintCallable)
+	void PlayButtonPressed();
+	
 	void LoadData();
 	
 	UPROPERTY(EditDefaultsOnly)
@@ -53,6 +59,8 @@ public:
 
 private:
 
+	int32 SelectedSlot;
+	
 	UPROPERTY()
 	TMap<int32, UMVVM_LoadSlot*> LoadSlots;
 

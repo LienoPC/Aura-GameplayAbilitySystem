@@ -43,11 +43,21 @@ public:
 	{
 		return PlayerName;
 	}
-	
+
+	void SetMapName(FString InMapName);
+
+
+	FString GetMapName() const
+	{
+		return MapName;
+	}
 private:
 
 	/** Field Notifies */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, FieldNotify, Setter, Getter, meta=(AllowPrivateAccess=true))
 	FString PlayerName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, FieldNotify, Setter, Getter, meta=(AllowPrivateAccess=true))
+	FString MapName;
 
 };
