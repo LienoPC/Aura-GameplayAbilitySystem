@@ -27,6 +27,9 @@ public:
 	void TravelToMap(UMVVM_LoadSlot* LoadSlot);
 	
 	static void DeleteSaveSlotData(const FString& SlotName, int32 SlotIndex);
+
+
+	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
 	
 	
 	UPROPERTY(EditDefaultsOnly, Category="Character Class Defaults")
@@ -44,6 +47,9 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly)
 	TMap<FString, TSoftObjectPtr<UWorld>> Maps;
+
+	UPROPERTY(EditDefaultsOnly)
+	FName DefaultPlayerStartTag;
 	
 protected:
 	virtual void BeginPlay() override;
