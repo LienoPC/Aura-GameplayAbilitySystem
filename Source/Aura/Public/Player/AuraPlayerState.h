@@ -46,9 +46,11 @@ public:
 
 	void AddToAttributePoints(int32 AddAttributePoints);
 	int32 GetAttributePoints();
+	void SetAttributePoints(const int32 InPoints);
 	
 	void AddToSpellPoints(int32 AddSpellPoints);
 	int32 GetSpellPoints();
+	void SetSpellPoints(const int32 InPoints);
 	
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULevelUpInfo> LevelsInfo;

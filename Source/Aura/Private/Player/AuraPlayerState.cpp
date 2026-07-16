@@ -84,6 +84,18 @@ int32 AAuraPlayerState::GetAttributePoints()
 	return AttributePoints;
 }
 
+void AAuraPlayerState::SetAttributePoints(const int32 InPoints)
+{
+	AttributePoints = InPoints;
+	OnAttributePointsChanged.Broadcast(AttributePoints);
+}
+
+void AAuraPlayerState::SetSpellPoints(const int32 InPoints)
+{
+	SpellPoints = InPoints;
+	OnSpellPointsChanged.Broadcast(SpellPoints);
+}
+
 int32 AAuraPlayerState::GetSpellPoints()
 {
 	return SpellPoints;

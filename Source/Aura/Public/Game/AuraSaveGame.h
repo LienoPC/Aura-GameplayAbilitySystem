@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
-#include "LoadScreenSaveGame.generated.h"
+#include "AuraSaveGame.generated.h"
 
 UENUM(BlueprintType)
 enum ESaveSlotStatus
@@ -18,7 +18,7 @@ enum ESaveSlotStatus
  * 
  */
 UCLASS()
-class AURA_API ULoadScreenSaveGame : public USaveGame
+class AURA_API UAuraSaveGame : public USaveGame
 {
 	GENERATED_BODY()
 
@@ -41,4 +41,30 @@ public:
 
 	UPROPERTY()
 	FName PlayerStartTag;
+
+	/** Player **/
+
+	UPROPERTY()
+	int32 PlayerLevel = 0;
+
+	UPROPERTY()
+	int32 XP = 0;
+
+	UPROPERTY()
+	int32 AttributePoints = 0;
+
+	UPROPERTY()
+	int32 SpellPoints = 0;
+	
+	UPROPERTY()
+	float Strength = 0.0f;
+	UPROPERTY()
+	float Intelligence = 0.0f;
+	UPROPERTY()
+	float Resilience = 0.0f;
+	UPROPERTY()
+	float Vigor = 0.0f;
+
+	UPROPERTY()
+	bool bFirstTimeLoadIn = true;
 };

@@ -32,6 +32,7 @@ public:
 	virtual void AddToSpellPoints_Implementation(const int32& InSpellPoints) override;
 	virtual void ShowMagicCircle_Implementation(UMaterialInterface* DecalMaterial = nullptr) override;
 	virtual void HideMagicCircle_Implementation() override;
+	virtual void SaveProgress_Implementation(const FName& CheckpointTag) override;
 	//End Player Interface
 
 	virtual void OnRep_PlayerState() override;
@@ -45,6 +46,7 @@ protected:
 
 	virtual void BeginPlay() override;
 	virtual void InitAbilityActorInfo() override;
+	void LoadProgress();
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<USpringArmComponent> SpringArm;
 

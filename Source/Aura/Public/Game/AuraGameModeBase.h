@@ -6,7 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "AuraGameModeBase.generated.h"
 
-class ULoadScreenSaveGame;
+class UAuraSaveGame;
 class USaveGame;
 class UMVVM_LoadSlot;
 class UCharacterClassInfo;
@@ -22,13 +22,14 @@ class AURA_API AAuraGameModeBase : public AGameModeBase
 public:
 	void SaveSlotData(UMVVM_LoadSlot* LoadSlot, int32 SlotIndex);
 
-	ULoadScreenSaveGame* GetSaveSlotData(const FString& SlotName, int32 SlotIndex);
+	UAuraSaveGame* GetSaveSlotData(const FString& SlotName, int32 SlotIndex);
 
 	void TravelToMap(UMVVM_LoadSlot* LoadSlot);
 	
 	static void DeleteSaveSlotData(const FString& SlotName, int32 SlotIndex);
 
-
+	UAuraSaveGame* RetreiveInGameSaveData();
+	void SaveInGameProgressData(UAuraSaveGame* SaveObject);
 	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
 	
 	
