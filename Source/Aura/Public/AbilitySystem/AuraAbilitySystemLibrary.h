@@ -46,6 +46,9 @@ public:
 	static void InitializeDefaultAbilities(const UObject* WorldContext, UAbilitySystemComponent* ASC,  ECharacterClass Class);
 
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults")
+	static void InitializeDefaultAbilitiesFromSaveData(const UObject* WorldContext, UAbilitySystemComponent* ASC,  UAuraSaveGame* SaveGame);
+
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults")
 	static UCharacterClassInfo* GetCharacterClassInfo(const UObject* WorldContextObject);
 
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults")

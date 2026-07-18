@@ -33,6 +33,7 @@ struct FUIWidgetRow : public FTableRowBase
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangedSignatue, float, NewValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStatChangedSignature, int32, NewValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnLevelChangedSigneture, int32, NewValue, bool, bLevelUp);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetRowSignature, FUIWidgetRow, WidgetRow);
 
 // Widget controller that manages data stream for Overlay Widget (Health globe, Mana globe, On Screen messages)
@@ -67,7 +68,7 @@ public:
 	FOnAttributeChangedSignatue OnXPChangedDelegate;
 
 	UPROPERTY(BlueprintAssignable, Category="GAS|Level")
-	FOnPlayerStatChangedSignature OnPlayerLevelChangedDelegate;
+	FOnLevelChangedSigneture OnPlayerLevelChangedDelegate;
 
 
 protected:
@@ -75,7 +76,7 @@ protected:
 	void OnAbilityEquipped(const FGameplayTag& AbilityTag, const FGameplayTag& Status, const FGameplayTag& NewInputTag, const FGameplayTag& OldInputTag) const;
 
 	void OnXPChanged(int32 NewXP);
-	void OnLevelChanged(int32 NewLevel);
+	void OnLevelChanged(int32 NewLevel, bool bLevelUp);
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Widget Data")
 	TObjectPtr<UDataTable> MessageWidgetDataTable;

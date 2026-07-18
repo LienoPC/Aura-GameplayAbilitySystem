@@ -3,8 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "GameFramework/SaveGame.h"
 #include "AuraSaveGame.generated.h"
+
+class UGameplayAbility;
 
 UENUM(BlueprintType)
 enum ESaveSlotStatus
@@ -13,6 +16,32 @@ enum ESaveSlotStatus
 	EnterName,
 	Taken
 };
+
+USTRUCT(BlueprintType)
+struct FSavedAbility
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Class Defaults")
+	TSubclassOf<UGameplayAbility> GameplayAbility;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Class Defaults")
+	FGameplayTag AbilityTag = FGameplayTag();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Class Defaults")
+	FGameplayTag AbilityStatus = FGameplayTag();
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Class Defaults")
+	FGameplayTag AbilitySlot = FGameplayTag();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Class Defaults")
+	FGameplayTag AbilityType = FGameplayTag();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Class Defaults")
+	int32 AbilityLevel;
+
+};
+
 
 /**
  * 
@@ -45,7 +74,7 @@ public:
 	/** Player **/
 
 	UPROPERTY()
-	int32 PlayerLevel = 0;
+	int32 PlayerLevel = 1;
 
 	UPROPERTY()
 	int32 XP = 0;
@@ -67,4 +96,9 @@ public:
 
 	UPROPERTY()
 	bool bFirstTimeLoadIn = true;
+
+	/** Abilities */
+
+	UPROPERTY()
+	TArray<FSavedAbility> SavedAbilities;
 };

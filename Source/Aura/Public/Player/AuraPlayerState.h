@@ -9,6 +9,7 @@
 
 class ULevelUpInfo;
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerStatChanged, int32);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnLevelChanged, int32, bool);
 
 class UAbilitySystemComponent;
 class UAttributeSet;
@@ -23,7 +24,7 @@ public:
 
 	FOnPlayerStatChanged OnExperienceChanged;
 
-	FOnPlayerStatChanged OnLevelChanged;
+	FOnLevelChanged OnLevelChanged;
 
 	FOnPlayerStatChanged OnAttributePointsChanged;
 

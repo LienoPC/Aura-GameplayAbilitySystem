@@ -128,8 +128,8 @@ void UOverlayWidgetController::OnXPChanged(int32 NewXP)
 	}
 }
 
-void UOverlayWidgetController::OnLevelChanged(int32 NewLevel)
+void UOverlayWidgetController::OnLevelChanged(int32 NewLevel, bool bLevelUp)
 {
-	OnPlayerLevelChangedDelegate.Broadcast(NewLevel);
+	OnPlayerLevelChangedDelegate.Broadcast(NewLevel, bLevelUp);
 }
 
