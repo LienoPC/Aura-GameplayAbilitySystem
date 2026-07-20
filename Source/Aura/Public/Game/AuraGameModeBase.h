@@ -11,6 +11,7 @@ class USaveGame;
 class UMVVM_LoadSlot;
 class UCharacterClassInfo;
 class UAbilityInfo;
+
 /**
  * 
  */
@@ -22,7 +23,7 @@ class AURA_API AAuraGameModeBase : public AGameModeBase
 public:
 	void SaveSlotData(UMVVM_LoadSlot* LoadSlot, int32 SlotIndex);
 
-	UAuraSaveGame* GetSaveSlotData(const FString& SlotName, int32 SlotIndex);
+	UAuraSaveGame* GetSaveSlotData(const FString& SlotName, int32 SlotIndex) const;
 
 	void TravelToMap(UMVVM_LoadSlot* LoadSlot);
 	
@@ -32,6 +33,9 @@ public:
 	void SaveInGameProgressData(UAuraSaveGame* SaveObject);
 	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
 	
+	void SaveWorldState(UWorld* World) const;
+	void LoadWorldState(UWorld* World) const;
+
 	
 	UPROPERTY(EditDefaultsOnly, Category="Character Class Defaults")
 	TObjectPtr<UCharacterClassInfo> CharacterClassInfo;

@@ -19,6 +19,7 @@
 #include "UI/Widget/DamageTextComponent.h"
 #include "Interaction/EnemyInterface.h"
 #include "Components/DecalComponent.h"
+#include "Interaction/HighlightInterface.h"
 
 
 AAuraPlayerController::AAuraPlayerController()
@@ -42,13 +43,13 @@ void AAuraPlayerController::HighlightTarget()
 {
 	if (LastActor != ThisActor)
 	{
-		if (LastActor)
+		if (IsValid(LastActor) && LastActor->Implements<UHighlightInterface>())
 		{
-			LastActor->UnHighlightActor();
+			IHighlightInterface::Execute_UnHighlightActor(LastActor);
 		}
-		if (ThisActor)
+		if (IsValid(ThisActor) && ThisActor->Implements<UHighlightInterface>())
 		{
-			ThisActor->HighlightActor();
+			IHighlightInterface::Execute_HighlightActor(ThisActor);
 		}
 	}
 }
@@ -94,13 +95,13 @@ void AAuraPlayerController::CursorTrace()
 	{
 		if (LastActor != ThisActor)
 		{
-			if (LastActor)
+			if (IsValid(LastActor) && LastActor->Implements<UHighlightInterface>())
 			{
-				LastActor->UnHighlightActor();
+				IHighlightInterface::Execute_UnHighlightActor(LastActor);
 			}
-			if (ThisActor)
+			if (IsValid(ThisActor) && ThisActor->Implements<UHighlightInterface>())
 			{
-				ThisActor->UnHighlightActor();
+				IHighlightInterface::Execute_UnHighlightActor(ThisActor);
 			}
 			LastActor = nullptr;
 			ThisActor = nullptr;
@@ -113,8 +114,14 @@ void AAuraPlayerController::CursorTrace()
 		return;
 
 	LastActor = ThisActor;
-	ThisActor = CursorHitLocation.GetActor();
-	
+	if (IsValid(CursorHitLocation.GetActor()) && CursorHitLocation.GetActor()->Implements<UHighlightInterface>())
+	{
+		ThisActor = CursorHitLocation.GetActor();
+
+	}else
+	{
+		ThisActor = nullptr;
+	}
 	HighlightTarget();
 	
 }
@@ -200,8 +207,15 @@ void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 	}
 	if (InputTag.IsValid() && InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
 	{
-		bTargeting = ThisActor == nullptr ? false : true;
-		bAutoRunning = false;
+
+		if (IsValid(ThisActor))
+		{
+			TargetingStatus = ThisActor->Implements<UEnemyInterface>() ? TargetingEnemy : TargetingGeneral;
+			bAutoRunning = false;
+		}else
+		{
+			TargetingStatus = NotTargeting;
+		}
 	}
 	if (GetAuraAbilitySystemComponent())
 	{
@@ -225,7 +239,7 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 	}
 
 	// Verify, while pressing LMB, if it is targeting something.
-	if (bTargeting || bIsShiftPressed)
+	if (TargetingStatus == TargetingEnemy || bIsShiftPressed)
 	{
 		if (GetAuraAbilitySystemComponent())
 			GetAuraAbilitySystemComponent()->AbilityInputTagReleased(InputTag);
@@ -258,7 +272,7 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 		}
 	}
 	FollowTime = 0.f;
-	bTargeting = false;
+	TargetingStatus = NotTargeting;
 	
 }
 
@@ -278,7 +292,7 @@ void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 	}
 	
 	// Verify, while pressing LMB, if it is targeting something.
-	if (!bTargeting && !bIsShiftPressed)
+	if (TargetingStatus != TargetingEnemy && !bIsShiftPressed)
 	{
 		// Take the target destination on movement input
 		FollowTime += GetWorld()->GetDeltaSeconds();

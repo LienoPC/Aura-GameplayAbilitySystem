@@ -39,6 +39,20 @@ AEnemy::AEnemy()
 	
 }
 
+void AEnemy::HighlightActor_Implementation()
+{
+	GetMesh()->SetRenderCustomDepth(true);
+	GetMesh()->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
+	Weapon->SetRenderCustomDepth(true);
+	Weapon->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
+}
+
+void AEnemy::UnHighlightActor_Implementation()
+{
+	GetMesh()->SetRenderCustomDepth(false);
+	Weapon->SetRenderCustomDepth(false);
+}
+
 
 int32 AEnemy::GetPlayerLevel_Implementation()
 {
@@ -163,21 +177,6 @@ void AEnemy::InitAbilityActorInfo()
 	if(HasAuthority())
 		InitializeDefaultAttributes();
 	OnAscRegistered.Broadcast(AbilitySystemComponent);
-}
-
-
-void AEnemy::HighlightActor()
-{
-	GetMesh()->SetRenderCustomDepth(true);
-	GetMesh()->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
-	Weapon->SetRenderCustomDepth(true);
-	Weapon->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
-}
-
-void AEnemy::UnHighlightActor()
-{
-	GetMesh()->SetRenderCustomDepth(false);
-	Weapon->SetRenderCustomDepth(false);
 }
 
 void AEnemy::PossessedBy(AController* NewController)

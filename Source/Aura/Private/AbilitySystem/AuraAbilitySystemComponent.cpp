@@ -10,6 +10,7 @@
 #include "AbilitySystem/Abilities/AuraGameplayAbility.h"
 #include "AbilitySystem/Data/AbilityInfo.h"
 #include "Aura/AuraLogChannels.h"
+#include "Game/AuraSaveGame.h"
 #include "Interaction/PlayerInterface.h"
 
 void UAuraAbilitySystemComponent::AbilityActorInfoSet()
@@ -30,6 +31,7 @@ void UAuraAbilitySystemComponent::AddCharacterAbilities(const TArray<TSubclassOf
 			GiveAbility(AbilitySpec);
 		}
 	}
+	bStartupAbilitiesGiven = true;
 	AbilitiesGivenDelegate.Broadcast();
 }
 
@@ -39,8 +41,39 @@ void UAuraAbilitySystemComponent::AddCharacterPassiveAbilities(
 	for (auto Ability : PassiveAbilities)
 	{
 		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(Ability, 1);
+		AbilitySpec.GetDynamicSpecSourceTags().AddTag(FAuraGameplayTags::Get().Abilities_Status_Equipped);
 		GiveAbilityAndActivateOnce(AbilitySpec);
 	}
+}
+
+void UAuraAbilitySystemComponent::AddCharacterAbilitiesFromSaveData(UAuraSaveGame* SaveGame)
+{
+
+	for (const FSavedAbility& Data : SaveGame->SavedAbilities)
+	{
+		const TSubclassOf<UGameplayAbility> LoadedAbilityClass = Data.GameplayAbility;
+
+		FGameplayAbilitySpec LoadedAbilitySpec = FGameplayAbilitySpec(LoadedAbilityClass,  Data.AbilityLevel);
+
+		LoadedAbilitySpec.GetDynamicSpecSourceTags().AddTag(Data.AbilitySlot);
+		LoadedAbilitySpec.GetDynamicSpecSourceTags().AddTag(Data.AbilityStatus);
+		if (Data.AbilityType.MatchesTagExact(FAuraGameplayTags::Get().Abilities_Type_Offensive))
+		{
+			GiveAbility(LoadedAbilitySpec);
+			
+		}else if (Data.AbilityType.MatchesTagExact(FAuraGameplayTags::Get().Abilities_Type_Passive)){
+			if (Data.AbilityStatus.MatchesTagExact(FAuraGameplayTags::Get().Abilities_Status_Equipped))
+			{
+				GiveAbilityAndActivateOnce(LoadedAbilitySpec);
+			}else
+			{
+				GiveAbility(LoadedAbilitySpec);
+			}
+		}
+	}
+	bStartupAbilitiesGiven = true;
+	AbilitiesGivenDelegate.Broadcast();
+
 }
 
 void UAuraAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& InputTag)
@@ -300,6 +333,8 @@ void UAuraAbilitySystemComponent::ServerEquipAbility_Implementation(const FGamep
 					TryActivateAbility(AbilitySpec->Handle);
 					MulticastActivatePassiveEffect(AbilityTag, true);
 				}
+				AbilitySpec->GetDynamicSpecSourceTags().RemoveTag(GetAbilityStatusFromSpec(*AbilitySpec));
+				AbilitySpec->GetDynamicSpecSourceTags().AddTag(FAuraGameplayTags::Get().Abilities_Status_Equipped);
 			}
 			// Remove input tag from other abilities
 			ClearAbilitiesOfInputTag(InputTag);
@@ -350,7 +385,7 @@ FGameplayTag UAuraAbilitySystemComponent::GetAbilityTagFromSpec(const FGameplayA
 {
 	if (AbilitySpec.Ability)
 	{
-		for (FGameplayTag Tag : AbilitySpec.Ability->AbilityTags)
+		for (FGameplayTag Tag : AbilitySpec.Ability->GetAssetTags())
 		{
 			if (Tag.MatchesTag(FGameplayTag::RequestGameplayTag(FName("Abilities"))))
 			{
@@ -402,7 +437,7 @@ FGameplayAbilitySpec* UAuraAbilitySystemComponent::GetSpecFromAbilityTag(const F
 	FScopedAbilityListLock ActiveScopeLock(*this);
 	for (auto &Spec : GetActivatableAbilities())
 	{
-		for (auto Tag : Spec.Ability->AbilityTags)
+		for (auto Tag : Spec.Ability->GetAssetTags())
 		{
 			if (Tag.MatchesTag(AbilityTag))
 			{
@@ -426,7 +461,11 @@ FGameplayTag UAuraAbilitySystemComponent::GetInputTagFromAbilityTag(const FGamep
 void UAuraAbilitySystemComponent::OnRep_ActivateAbilities()
 {
 	Super::OnRep_ActivateAbilities();
-	AbilitiesGivenDelegate.Broadcast();
+	if (!bStartupAbilitiesGiven)
+	{
+		bStartupAbilitiesGiven = true;
+		AbilitiesGivenDelegate.Broadcast();
+	}
 }
 
 void UAuraAbilitySystemComponent::ClientUpdateAbilityStatus_Implementation(const FGameplayTag& AbilityTag,

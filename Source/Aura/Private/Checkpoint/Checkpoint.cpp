@@ -4,7 +4,9 @@
 #include "Checkpoint/Checkpoint.h"
 
 #include "Components/SphereComponent.h"
+#include "Game/AuraGameModeBase.h"
 #include "Interaction/PlayerInterface.h"
+#include "Kismet/GameplayStatics.h"
 
 ACheckpoint::ACheckpoint(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer){
 	PrimaryActorTick.bCanEverTick = false;
@@ -27,6 +29,7 @@ void ACheckpoint::BeginPlay()
 {
 	Super::BeginPlay();
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &ACheckpoint::OnSphereOverlap);
+	
 }
 
 void ACheckpoint::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -34,6 +37,9 @@ void ACheckpoint::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 {
 	if (OtherActor->Implements<UPlayerInterface>())
 	{
+		bReached = true;
+		AAuraGameModeBase* GameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this));
+		GameMode->SaveWorldState(GetWorld());
 		IPlayerInterface::Execute_SaveProgress(OtherActor, PlayerStartTag);
 		HandleGlowEffects();
 	}
@@ -46,4 +52,17 @@ void ACheckpoint::HandleGlowEffects()
 	CheckpointMesh->SetMaterial(0, DynamicMaterialInstance);
 
 	CheckpointReached(DynamicMaterialInstance);
+}
+
+void ACheckpoint::LoadActor_Implementation()
+{
+	if (bReached)
+	{
+		HandleGlowEffects();
+	}
+}
+
+bool ACheckpoint::ShouldLoadTransform_Implementation() const
+{
+	return false;
 }

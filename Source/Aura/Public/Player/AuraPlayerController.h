@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "AuraPlayerController.generated.h"
 
+class IHighlightInterface;
 class AMagicCircle;
 class UNiagaraSystem;
 class UDamageTextComponent;
@@ -17,6 +18,13 @@ struct FInputActionValue;
 class UInputAction;
 class UInputMappingContext;
 class USplineComponent;
+
+enum ETargetingStatus : uint8
+{
+	TargetingEnemy = 0,
+	TargetingGeneral = 1,
+	NotTargeting = 2
+};
 
 /**
  * Player Controller for Aura (player) that manages all input information from its InputMappingContext
@@ -81,8 +89,10 @@ private:
 	
 	void CursorTrace();
 
-	TScriptInterface<IEnemyInterface> LastActor;
-	TScriptInterface<IEnemyInterface> ThisActor;
+	UPROPERTY()
+	TObjectPtr<AActor> LastActor;
+	UPROPERTY()
+	TObjectPtr<AActor> ThisActor;
 	
 	// Contains InputConfig mapping to GameplayTags
 	UPROPERTY(EditDefaultsOnly, Category="Input")
@@ -106,7 +116,7 @@ private:
 	// If it should auto-run every frame, call AddMovementInput.
 	bool bAutoRunning = false;
 	// Indicates if, upon clicking, the player is targeting something.
-	bool bTargeting = false;
+	ETargetingStatus TargetingStatus = NotTargeting;
 
 	// Minimum acceptance radius allowed for player auto-run.
 	UPROPERTY(EditDefaultsOnly)

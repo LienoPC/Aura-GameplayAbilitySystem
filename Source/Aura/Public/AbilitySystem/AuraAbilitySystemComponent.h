@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "AuraAbilitySystemComponent.generated.h"
 
+class UAuraSaveGame;
 DECLARE_MULTICAST_DELEGATE_OneParam(FEffectAssetTags, const FGameplayTagContainer& /*AssetTags*/)
 DECLARE_MULTICAST_DELEGATE(FAbilitiesGiven);
 DECLARE_DELEGATE_OneParam(FForEachAbility, const FGameplayAbilitySpec);
@@ -29,7 +30,7 @@ public:
 
 	void AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbilities);
 	void AddCharacterPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& PassiveAbilities);
-
+	void AddCharacterAbilitiesFromSaveData(UAuraSaveGame* SaveGame);
 	void AbilityInputTagPressed(const FGameplayTag& InputTag);
 	
 	// Iterate through abilities and activate all abilities (not already active) associated with a particular Tag.
@@ -82,6 +83,9 @@ public:
 	FAbilityEquipped AbilityEquipped;
 	FDeactivatePassiveAbility DeactivatePassiveAbilityDelegate;
 	FActivatePassiveEffect ActivatePassiveEffectDelegate;
+
+	bool bStartupAbilitiesGiven = false;
+
 protected:
 
 	virtual void OnRep_ActivateAbilities() override;
@@ -91,6 +95,7 @@ protected:
 
 	UFUNCTION(Client, Reliable)
 	void ClientUpdateAbilityStatus(const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag, int32 Level);
+
 };
 
 

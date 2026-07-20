@@ -6,6 +6,7 @@
 #include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "Characters/BaseCharacter.h"
 #include "Interaction/EnemyInterface.h"
+#include "Interaction/HighlightInterface.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
 #include "Enemy.generated.h"
 
@@ -19,14 +20,15 @@ class UWidgetComponent;
  * 
  */
 UCLASS()
-class AURA_API AEnemy : public ABaseCharacter, public IEnemyInterface
+class AURA_API AEnemy : public ABaseCharacter, public IEnemyInterface, public IHighlightInterface
 {
 	GENERATED_BODY()
 
 public:
 	AEnemy();
-	virtual void HighlightActor() override;
-	virtual void UnHighlightActor() override;
+
+	virtual void HighlightActor_Implementation() override;
+	virtual void UnHighlightActor_Implementation() override;
 
 	virtual void PossessedBy(AController* NewController) override;
 

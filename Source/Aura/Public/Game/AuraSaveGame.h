@@ -17,6 +17,46 @@ enum ESaveSlotStatus
 	Taken
 };
 
+
+USTRUCT()
+struct FSavedActor
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FName ActorName = FName();
+
+	UPROPERTY()
+	FTransform ActorTransform = FTransform();
+
+	// Serialized variables from the Actor
+	UPROPERTY()
+	TArray<uint8> Bytes;
+
+	bool operator==(const FSavedActor& Other) const
+	{
+		return ActorName == Other.ActorName;
+	}
+	
+};
+
+FORCEINLINE uint32 GetTypeHash(const FSavedActor& SavedActor)
+{
+	return GetTypeHash(SavedActor.ActorName);
+}
+
+USTRUCT()
+struct FSavedMap
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FString MapAssetName = FString();
+
+	UPROPERTY()
+	TArray<FSavedActor> SavedActors;
+};
+
 USTRUCT(BlueprintType)
 struct FSavedAbility
 {
@@ -39,6 +79,11 @@ struct FSavedAbility
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Class Defaults")
 	int32 AbilityLevel;
+
+	bool operator==(const FSavedAbility& Other) const
+	{
+		return AbilityTag == Other.AbilityTag ;
+	}
 
 };
 
@@ -101,4 +146,12 @@ public:
 
 	UPROPERTY()
 	TArray<FSavedAbility> SavedAbilities;
+
+	/** World */
+	UPROPERTY()
+	TArray<FSavedMap> SavedMaps;
+
+	FSavedMap GetSavedMapWithMapName(const FString& InMapName);
+
+	bool HasMap(const FString& InMapName);
 };

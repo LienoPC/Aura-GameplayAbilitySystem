@@ -18,6 +18,7 @@ class AURA_API UPassiveNiagaraComponent : public UNiagaraComponent
 public:
 
 	UPassiveNiagaraComponent();
+	void ActivateIfEquipped();
 
 	UPROPERTY(EditDefaultsOnly)
 	FGameplayTag PassiveAbilityTag;
