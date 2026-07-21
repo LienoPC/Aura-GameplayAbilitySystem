@@ -53,6 +53,10 @@ void AEnemy::UnHighlightActor_Implementation()
 	Weapon->SetRenderCustomDepth(false);
 }
 
+void AEnemy::SetMoveToLocation_Implementation(FVector& OutDestination)
+{
+}
+
 
 int32 AEnemy::GetPlayerLevel_Implementation()
 {

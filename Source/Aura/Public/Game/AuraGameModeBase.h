@@ -33,7 +33,7 @@ public:
 	void SaveInGameProgressData(UAuraSaveGame* SaveObject);
 	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
 	
-	void SaveWorldState(UWorld* World) const;
+	void SaveWorldState(UWorld* World, const FString& DestinationMapAssetName = FString()) const;
 	void LoadWorldState(UWorld* World) const;
 
 	
@@ -59,7 +59,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-
+	FString GetMapNameFromMapAssetName(const FString& MapAssetName) const;
+	
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<USaveGame> LoadScreenSaveGameClass;
 };

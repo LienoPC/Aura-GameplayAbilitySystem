@@ -249,6 +249,17 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 		// Click-to-move behavior
 		if (FollowTime <= ShortPressedThreshold && ControlledPawn)
 		{
+			if (IsValid(ThisActor) && ThisActor->Implements<UHighlightInterface>())
+			{
+				IHighlightInterface::Execute_SetMoveToLocation(ThisActor, CachedDestination);
+			}else
+			{
+				if (GetAuraAbilitySystemComponent() && GetAuraAbilitySystemComponent()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputReleased))
+				{
+					return;
+				}
+				UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ClickNiagaraSystem, CachedDestination);
+			}
 			FVector StartLocation = ControlledPawn->GetActorLocation();
 			// Find a path to follow
 			if (UNavigationPath* Path = UNavigationSystemV1::FindPathToLocationSynchronously(this, StartLocation, CachedDestination))
@@ -264,11 +275,6 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 					CachedDestination = Path->PathPoints[Path->PathPoints.Num() - 1];
 			}
 
-			if (GetAuraAbilitySystemComponent() && GetAuraAbilitySystemComponent()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputReleased))
-			{
-				return;
-			}
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ClickNiagaraSystem, CachedDestination);
 		}
 	}
 	FollowTime = 0.f;

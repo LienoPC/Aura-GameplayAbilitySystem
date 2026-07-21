@@ -111,6 +111,9 @@ public:
 	FString MapName = FString();
 
 	UPROPERTY()
+	FString MapAssetName = FString();
+	
+	UPROPERTY()
 	TEnumAsByte<ESaveSlotStatus> SlotStatus = ESaveSlotStatus::Vacant;
 
 	UPROPERTY()
