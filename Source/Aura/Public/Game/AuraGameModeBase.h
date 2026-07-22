@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "AuraGameModeBase.generated.h"
 
+class ULootTiers;
 class UAuraSaveGame;
 class USaveGame;
 class UMVVM_LoadSlot;
@@ -43,7 +44,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Ability Info")
 	TObjectPtr<UAbilityInfo> AbilityInfo;
 
+	UPROPERTY(EditDefaultsOnly, Category="Loot Tiers")
+	TObjectPtr<ULootTiers> LootTiers;
 
+	
 	UPROPERTY(EditDefaultsOnly)
 	FString StartingMapName;
 
@@ -56,6 +60,7 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	FName DefaultPlayerStartTag;
 	
+	void PlayerDied(ACharacter* Player);
 protected:
 	virtual void BeginPlay() override;
 

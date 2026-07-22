@@ -10,6 +10,7 @@
 #include "AuraAbilitySystemLibrary.generated.h"
 
 
+class ULootTiers;
 class AAuraHUD;
 class USpellMenuWidgetController;
 class UAttributeMenuWidgetController;
@@ -48,11 +49,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults")
 	static void InitializeDefaultAbilitiesFromSaveData(const UObject* WorldContext, UAbilitySystemComponent* ASC,  UAuraSaveGame* SaveGame);
 
-	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults")
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults", meta = (DefaultToSelf = "WorldContextObject"))
 	static UCharacterClassInfo* GetCharacterClassInfo(const UObject* WorldContextObject);
 
-	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults")
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults", meta = (DefaultToSelf = "WorldContextObject"))
 	static UAbilityInfo* GetAbilityInfo(const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults", meta = (DefaultToSelf = "WorldContextObject"))
+	static ULootTiers* GetLootTiers(const UObject* WorldContextObject);
 
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|Ability")
 	static FGameplayEffectContextHandle ApplyDamageEffect(const FDamageEffectParams& DamageEffectParams);

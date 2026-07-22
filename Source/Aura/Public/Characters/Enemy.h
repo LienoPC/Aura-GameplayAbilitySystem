@@ -64,7 +64,7 @@ public:
 	
 	virtual void Die(const FVector& DeathImpulse) override;
 
-
+	void SetLevel(int32 NewLevel) { Level = NewLevel; }
 protected:
 	virtual void BeginPlay() override;
 
@@ -73,7 +73,11 @@ protected:
 	/* Initializes enemy HUD components */
 	void InitHUD();
 	virtual void InitAbilityActorInfo() override;
-	UPROPERTY(EditAnywhere, Category="Character Class Defaults")
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void SpawnLoot();
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character Class Defaults")
 	int32 Level = 1;
 
 	// Widget for health bar

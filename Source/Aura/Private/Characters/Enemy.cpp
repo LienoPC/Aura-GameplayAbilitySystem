@@ -126,7 +126,6 @@ void AEnemy::StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 
 void AEnemy::Die(const FVector& DeathImpulse)
 {
-	Super::Die(DeathImpulse);
 	if (AuraAIController)
 	{
 		if (UBlackboardComponent* BlackboardComponent = AuraAIController->GetBlackboardComponent())
@@ -135,6 +134,8 @@ void AEnemy::Die(const FVector& DeathImpulse)
 		}
 	}
 	SetLifeSpan(LifeSpan);
+	SpawnLoot();
+	Super::Die(DeathImpulse);
 }
 
 void AEnemy::BeginPlay()

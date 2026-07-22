@@ -65,6 +65,11 @@ public:
 
 	virtual FOnDamageSignature& GetOnDamageTakenDelegate() override;
 	// End Combat Interface
+
+	void SetCharacterClass(const ECharacterClass NewCharacterClass)
+	{
+		CharacterClass = NewCharacterClass;
+	}
 	
 	UFUNCTION(NetMulticast, Reliable)	
 	virtual void MulticastHandleDeath(const FVector& DeathImpulse);
@@ -112,6 +117,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Combat")
 	TMap<FGameplayTag, FName> TagToSocketName;
 
+	UPROPERTY(BlueprintReadOnly)
 	bool bDead = false;
 
 

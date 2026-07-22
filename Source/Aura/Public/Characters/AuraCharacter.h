@@ -35,6 +35,12 @@ public:
 	virtual void SaveProgress_Implementation(const FName& CheckpointTag) override;
 	//End Player Interface
 
+	virtual void Die(const FVector& DeathImpulse) override;
+	UPROPERTY(EditDefaultsOnly)
+	float DeathTime = 5.f;
+
+	FTimerHandle DeathTimer;
+		
 	virtual void OnRep_PlayerState() override;
 	virtual void OnRep_Burned() override;
 	virtual void OnRep_Stunned() override;

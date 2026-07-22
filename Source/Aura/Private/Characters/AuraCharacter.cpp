@@ -196,6 +196,23 @@ void AAuraCharacter::SaveProgress_Implementation(const FName& CheckpointTag)
 	}
 }
 
+void AAuraCharacter::Die(const FVector& DeathImpulse)
+{
+	Super::Die(DeathImpulse);
+
+	FTimerDelegate DeathTimerDelegate;
+	DeathTimerDelegate.BindLambda([this]()
+	{
+		if (AAuraGameModeBase* AuraGM = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this)))
+		{
+			AuraGM->PlayerDied(this);
+		}
+	});
+
+	GetWorldTimerManager().SetTimer(DeathTimer, DeathTimerDelegate, DeathTime, false);
+	Camera->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+}
+
 
 void AAuraCharacter::BeginPlay()
 {

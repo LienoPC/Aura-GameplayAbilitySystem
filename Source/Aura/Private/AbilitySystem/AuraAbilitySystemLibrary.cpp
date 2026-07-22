@@ -202,6 +202,18 @@ UAbilityInfo* UAuraAbilitySystemLibrary::GetAbilityInfo(const UObject* WorldCont
 	return nullptr;
 }
 
+ULootTiers* UAuraAbilitySystemLibrary::GetLootTiers(const UObject* WorldContextObject)
+{
+	if(!WorldContextObject)
+		return nullptr;
+	AAuraGameModeBase* GameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
+
+	if(GameMode)
+		return GameMode->LootTiers;
+
+	return nullptr;
+}
+
 FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyDamageEffect(const FDamageEffectParams& DamageEffectParams)
 {
 	if (!DamageEffectParams.WorldContextObject)
