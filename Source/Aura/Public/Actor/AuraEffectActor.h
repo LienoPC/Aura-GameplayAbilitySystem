@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "ActiveGameplayEffectHandle.h"
+#include "MathUtil.h"
 #include "GameFramework/Actor.h"
 #include "AuraEffectActor.generated.h"
 
@@ -34,6 +35,7 @@ class AURA_API AAuraEffectActor : public AActor
 public:	
 	AAuraEffectActor();
 
+	virtual void Tick(float DeltaSeconds) override;
 protected:
 	virtual void BeginPlay() override;
 
@@ -71,9 +73,43 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Apply Effects")
 	float ActorLevel = 1.f;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Pickup Movement")
+	bool bRotates = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Pickup Movement")
+	float RotationRate = 45.f;
+
+	UFUNCTION(BlueprintCallable)
+	void StartRotation();
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Pickup Movement")
+	bool bSinMovement = false;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Pickup Movement")
+	float SinAmplitude = 1.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Pickup Movement")
+	float SinPeriod = 1.f;
+
+	UFUNCTION(BlueprintCallable)
+	void StartSinMovement();
+
+	UPROPERTY(BlueprintReadOnly, Category="Pickup Movement")
+	FVector InitialLocation;
+	
+	UPROPERTY(BlueprintReadOnly, Category="Pickup Movement")
+	FVector ItemLocation;
+
+	UPROPERTY(BlueprintReadOnly, Category="Pickup Movement")
+	FRotator ItemRotation;
 private:
 	void ApplyEffect(TSubclassOf<UGameplayEffect> GameplayEffectClass, UAbilitySystemComponent* TargetASC);
 
+	void ItemMovement(const float DeltaTime);
 	UPROPERTY(EditAnywhere, Category="Apply Effects")
 	bool bApplyEffectsToEnemies = false;
+
+	float RunningTime = 0.f;
 };

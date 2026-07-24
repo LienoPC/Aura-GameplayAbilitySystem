@@ -5,21 +5,38 @@
 
 #include "AbilitySystemInterface.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Net/RepLayout.h"
 
 AAuraEffectActor::AAuraEffectActor()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	SetRootComponent(CreateDefaultSubobject<USceneComponent>("SceneRoot"));
 }
 
+void AAuraEffectActor::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	RunningTime += DeltaSeconds;
+
+	const float SinePeriod = 2*PI/SinPeriod;
+	if (RunningTime > SinePeriod)
+	{
+		RunningTime = 0.0f;
+	}
+	ItemMovement(DeltaSeconds);
+}
 
 
 void AAuraEffectActor::BeginPlay()
 {
 	Super::BeginPlay();
 
+	InitialLocation = GetActorLocation();
+	ItemLocation = GetActorLocation();
+	ItemRotation = GetActorRotation();
 }
 
 void AAuraEffectActor::ApplyEffectToTarget(AActor* Target, TArray<TSubclassOf<UGameplayEffect>> GameplayEffectClass)
@@ -40,6 +57,19 @@ void AAuraEffectActor::ApplyEffectToTarget(AActor* Target, TArray<TSubclassOf<UG
 
 }
 
+void AAuraEffectActor::StartRotation()
+{
+	bRotates = true;
+	ItemRotation = GetActorRotation();
+}
+
+void AAuraEffectActor::StartSinMovement()
+{
+	bSinMovement = true;
+	InitialLocation = GetActorLocation();
+	ItemLocation = GetActorLocation();
+}
+
 void AAuraEffectActor::ApplyEffect(TSubclassOf<UGameplayEffect> GameplayEffectClass, UAbilitySystemComponent* TargetASC)
 {
 	FGameplayEffectContextHandle Handle = TargetASC->MakeEffectContext();
@@ -52,6 +82,21 @@ void AAuraEffectActor::ApplyEffect(TSubclassOf<UGameplayEffect> GameplayEffectCl
 	{
 		// Store handle to effect
 		ActiveEffectHandles.Add(ActiveEffectHandle, TargetASC);
+	}
+}
+
+void AAuraEffectActor::ItemMovement(const float DeltaTime)
+{
+	if (bRotates)
+	{
+		const FRotator DeltaRotation(0.f, DeltaTime * RotationRate, 0.f);
+		ItemRotation = UKismetMathLibrary::ComposeRotators(ItemRotation, DeltaRotation);
+	}
+
+	if (bSinMovement)
+	{
+		const float Sin = SinAmplitude*FMath::Sin(RunningTime * SinPeriod);
+		ItemLocation = InitialLocation + FVector(0.f, 0.f, Sin);
 	}
 }
 
