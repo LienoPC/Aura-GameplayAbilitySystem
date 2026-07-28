@@ -21,10 +21,10 @@ void AMapEntrance::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AAc
 	{
 		bReached = true;
 		AAuraGameModeBase* GameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this));
-		
+		IPlayerInterface::Execute_SaveProgress(OtherActor, DestinationPlayerStartTag);
+
 		GameMode->SaveWorldState(GetWorld(), DestinationMap.ToSoftObjectPath().GetAssetName());
 
-		IPlayerInterface::Execute_SaveProgress(OtherActor, DestinationPlayerStartTag);
 
 		UGameplayStatics::OpenLevelBySoftObjectPtr(this, DestinationMap);
 	}

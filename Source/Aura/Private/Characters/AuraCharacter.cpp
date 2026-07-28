@@ -185,7 +185,7 @@ void AAuraCharacter::SaveProgress_Implementation(const FName& CheckpointTag)
 			SavedAbility.AbilityTag = Info.AbilityTag;
 			SavedAbility.AbilitySlot = ASC->GetInputTagFromAbilityTag(Info.AbilityTag);
 			SavedAbility.AbilityStatus = ASC->GetStatusFromAbilityTag(Info.AbilityTag);
-			SavedAbility.AbilityLevel = Info.LevelRequirement;
+			SavedAbility.AbilityLevel = SavedAbility.AbilityStatus.MatchesTagExact(FAuraGameplayTags::Get().Abilities_Status_Locked) ? Info.LevelRequirement : AbilitySpec.Level;
 			SavedAbility.AbilityType = Info.AbilityType;
 			
 			SaveData->SavedAbilities.AddUnique(SavedAbility);

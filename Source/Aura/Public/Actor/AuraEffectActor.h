@@ -99,10 +99,10 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category="Pickup Movement")
 	FVector InitialLocation;
 	
-	UPROPERTY(BlueprintReadOnly, Category="Pickup Movement")
+	UPROPERTY(BlueprintReadWrite, Category="Pickup Movement")
 	FVector ItemLocation;
 
-	UPROPERTY(BlueprintReadOnly, Category="Pickup Movement")
+	UPROPERTY(BlueprintReadWrite, Category="Pickup Movement")
 	FRotator ItemRotation;
 private:
 	void ApplyEffect(TSubclassOf<UGameplayEffect> GameplayEffectClass, UAbilitySystemComponent* TargetASC);

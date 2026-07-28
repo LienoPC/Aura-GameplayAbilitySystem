@@ -40,7 +40,7 @@ void AAuraProjectile::OnHit()
 
 void AAuraProjectile::Destroyed()
 {
-	if(LoopingSoundComponent)
+	if(IsValid(LoopingSoundComponent))
     {
     	LoopingSoundComponent->Stop();
     	LoopingSoundComponent->DestroyComponent();

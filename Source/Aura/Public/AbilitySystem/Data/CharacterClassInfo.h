@@ -16,6 +16,7 @@ enum class ECharacterClass: uint8
 	Elementalist,
 	Warrior,
 	Ranged,
+	Ogre,
 };
 
 USTRUCT()

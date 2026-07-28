@@ -133,6 +133,7 @@ void AEnemy::Die(const FVector& DeathImpulse)
 			BlackboardComponent->SetValueAsBool(FName("IsDead"), true);
 		}
 	}
+	HealthBar->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
 	SetLifeSpan(LifeSpan);
 	SpawnLoot();
 	Super::Die(DeathImpulse);

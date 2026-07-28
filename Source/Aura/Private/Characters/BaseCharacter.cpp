@@ -209,7 +209,7 @@ void ABaseCharacter::MulticastHandleDeath_Implementation(const FVector& DeathImp
 
 	// Apply here death impulse
 	GetMesh()->AddImpulse(DeathImpulse, NAME_None, true);
-
+	
 	// Dissolve character after death
 	Dissolve();
 	bDead = true;

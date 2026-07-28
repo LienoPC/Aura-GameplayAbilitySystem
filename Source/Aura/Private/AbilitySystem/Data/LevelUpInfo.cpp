@@ -36,6 +36,7 @@ int32 ULevelUpInfo::LevelAtXP(int32 XP) const
 	return 1;
 }
 
+#if WITH_EDITOR
 void ULevelUpInfo::PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
@@ -57,3 +58,4 @@ void ULevelUpInfo::PostEditChangeProperty(struct FPropertyChangedEvent& Property
 		return A.Level  < B.Level;
 	});
 }
+#endif

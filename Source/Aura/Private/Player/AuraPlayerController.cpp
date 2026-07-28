@@ -175,6 +175,7 @@ void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 	{
 		return;
 	}
+	bAutoRunning = false;
 	const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
 	const FRotator Rotation = GetControlRotation();
 	const FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
@@ -211,11 +212,11 @@ void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 		if (IsValid(ThisActor))
 		{
 			TargetingStatus = ThisActor->Implements<UEnemyInterface>() ? TargetingEnemy : TargetingGeneral;
-			bAutoRunning = false;
 		}else
 		{
 			TargetingStatus = NotTargeting;
 		}
+		bAutoRunning = false;
 	}
 	if (GetAuraAbilitySystemComponent())
 	{
@@ -243,6 +244,7 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 	{
 		if (GetAuraAbilitySystemComponent())
 			GetAuraAbilitySystemComponent()->AbilityInputTagReleased(InputTag);
+		bAutoRunning = false;
 	}else
 	{
 		const APawn* ControlledPawn = GetPawn<APawn>();

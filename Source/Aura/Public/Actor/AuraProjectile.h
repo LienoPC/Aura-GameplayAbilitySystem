@@ -57,6 +57,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<USoundBase> FlySound;
 
+	UPROPERTY()
 	TObjectPtr<UAudioComponent> LoopingSoundComponent;
 
 	UPROPERTY(EditDefaultsOnly)
