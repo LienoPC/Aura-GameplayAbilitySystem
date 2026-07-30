@@ -19,7 +19,7 @@ The project covers most of functionalities needed for a complete top-down, diabl
 - Combat system based on **physical hits** (hitbox, weapon and animation montages) and **spell abilities**.
   
   <a href="assets/Aura_1_2.png" target="_blank">
-    <img src="assets/Aura_Attributes.png" alt="Spells" width="200" border="4" bordercolor="#ccc" />
+    <img src="assets/Aura_1_2.png" alt="Spells" width="200" border="4" bordercolor="#ccc" />
   </a>
 
 - Experience and Level Ups. Game progression with increasing attribute points and new unlockable/upgradable spells.
@@ -28,7 +28,7 @@ The project covers most of functionalities needed for a complete top-down, diabl
     <img src="assets/Aura_Attributes.png" alt="Attributes" width="200" border="4" bordercolor="#ccc" />
   </a>
   <a href="assets/Aura_Spells.png" target="_blank">
-    <img src="assets/Dragon_Closeup.png" alt="Spell" width="200" border="4" bordercolor="#ccc" />
+    <img src="assets/Aura_Spells.png" alt="Spells view" width="200" border="4" bordercolor="#ccc" />
   </a>
 
 - Enemies, each one with different, **data-driven**, **abilities** and **stats**.
